@@ -33,40 +33,50 @@ namespace GraphicsHelper
             recalculateNormVector();
             return this;
         }
+
         public Face addEdges(IEnumerable<Line> edges)
         {
             this.edges.AddRange(edges);
             recalculateNormVector();
             return this;
         }
+
         public Face addVerticle(Point p)
         {
             verticles.Add(p);
             return this;
         }
+
         public Face addVerticles(IEnumerable<Point> points)
         {
             this.verticles.AddRange(points);
             return this;
         }
 
-        public List<Point> Verticles { get => verticles; }
+        public List<Point> Verticles
+        {
+            get => verticles;
+        }
+
         void recalculateNormVector()
         {
-
         }
 
         public Vector NormVector
         {
             get
             {
-                Vector a = new Vector(edges.First().getVectorCoordinates()), b = new Vector(edges.Last().getReverseVectorCoordinates());
+                Vector a = new Vector(edges.First().getVectorCoordinates()),
+                    b = new Vector(edges.Last().getReverseVectorCoordinates());
                 normVector = (b * a).normalize();
                 return normVector;
             }
         }
 
-        public List<Line> Edges { get => edges; }
+        public List<Line> Edges
+        {
+            get => edges;
+        }
 
         /// <summary>
         /// Получение центра тяжести грани
@@ -81,6 +91,7 @@ namespace GraphicsHelper
                 y += line.Start.Yf;
                 z += line.Start.Zf;
             }
+
             return new Point(x / edges.Count, y / edges.Count, z / edges.Count);
         }
     }

@@ -32,9 +32,13 @@ namespace GraphicsHelper
 
         public Point toCameraView(Point p)
         {
-            return new Point(cameraRight.x * (p.Xf - cameraPosition.Xf) + cameraRight.y * (p.Yf - cameraPosition.Yf) + cameraRight.z * (p.Zf - cameraPosition.Zf),
-                             cameraUp.x * (p.Xf - cameraPosition.Xf) + cameraUp.y * (p.Yf - cameraPosition.Yf) + cameraUp.z * (p.Zf - cameraPosition.Zf),
-                             cameraDirection.x * (p.Xf - cameraPosition.Xf) + cameraDirection.y * (p.Yf - cameraPosition.Yf) + cameraDirection.z * (p.Zf - cameraPosition.Zf));
+            return new Point(
+                cameraRight.x * (p.Xf - cameraPosition.Xf) + cameraRight.y * (p.Yf - cameraPosition.Yf) +
+                cameraRight.z * (p.Zf - cameraPosition.Zf),
+                cameraUp.x * (p.Xf - cameraPosition.Xf) + cameraUp.y * (p.Yf - cameraPosition.Yf) +
+                cameraUp.z * (p.Zf - cameraPosition.Zf),
+                cameraDirection.x * (p.Xf - cameraPosition.Xf) + cameraDirection.y * (p.Yf - cameraPosition.Yf) +
+                cameraDirection.z * (p.Zf - cameraPosition.Zf));
         }
 
         public void changeView(double shiftX = 0, double shiftY = 0)
@@ -46,6 +50,7 @@ namespace GraphicsHelper
                 AffineTransformations.rotateVectors(ref cameraDirection, ref cameraUp, (newPitch - pitch), cameraRight);
                 pitch = newPitch;
             }
+
             if (newYaw != yaw)
             {
                 AffineTransformations.rotateVectors(ref cameraDirection, ref cameraRight, (newYaw - yaw), cameraUp);

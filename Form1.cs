@@ -1,5 +1,4 @@
 ﻿using GraphicsHelper;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using Point = GraphicsHelper.Point;
 
 namespace AdvancedGraphics
@@ -49,7 +47,7 @@ namespace AdvancedGraphics
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 Shape s = Shape.readShape(openFileDialog1.FileName);
                 sceneShapes.Add(s);
@@ -61,11 +59,12 @@ namespace AdvancedGraphics
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            sceneShapes.Remove((Shape)listBox.SelectedValue);
-            if(sceneShapes.Count == 0)
+            sceneShapes.Remove((Shape) listBox.SelectedValue);
+            if (sceneShapes.Count == 0)
             {
                 changeToolsAccessibility(false);
             }
+
             redrawScene();
         }
 
@@ -94,53 +93,53 @@ namespace AdvancedGraphics
             {
                 Point.projection = ProjectionType.TRIMETRIC;
             }
+
             redrawScene();
-        }
-
-        System.Drawing.Point previousLocation;
-        private void canvas_MouseDown(object sender, MouseEventArgs e)
-        {
-            isMoving = true;
-            previousLocation = e.Location;
-        }
-
-        private void canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (isMoving)
-            {
-                //camera.changeView(e.X - previousLocation.X, previousLocation.Y - e.Y);
-                //label5.Text = $"{camera.} => {Math.Round(camera.currentAzimuthalAlpha,2)}/{Math.Round(camera.currentAnglePolar,2)}";
-                //previousLocation = e.Location;
-                //redrawScene();
-            }
-        }
-
-        private void canvas_MouseUp(object sender, MouseEventArgs e)
-        {
-            isMoving = false;
         }
 
         private void buttonShift_Click(object sender, EventArgs e)
         {
-            sceneShapes[listBox.SelectedIndex] = AffineTransformations.shift(sceneShapes[listBox.SelectedIndex], int.Parse(textShiftX.Text), int.Parse(textShiftY.Text), int.Parse(textShiftZ.Text));
+            sceneShapes[listBox.SelectedIndex] = AffineTransformations.shift(sceneShapes[listBox.SelectedIndex],
+                int.Parse(textShiftX.Text), int.Parse(textShiftY.Text), int.Parse(textShiftZ.Text));
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             switch (e.KeyChar)
             {
-                case 'w': camera.move(forwardbackward: 5); break;
-                case 'a': camera.move(leftright: 5); break;
-                case 's': camera.move(forwardbackward: -5); break;
-                case 'd': camera.move(leftright: -5); break;
-                case 'q': camera.move(updown: 5); break;
-                case 'e': camera.move(updown: -5); break;
-                case 'i': camera.changeView(shiftY: 2); break;
-                case 'j': camera.changeView(shiftX: -2); break;
-                case 'k': camera.changeView(shiftY: -2); break;
-                case 'l': camera.changeView(shiftX: 2); break;
+                case 'w':
+                    camera.move(forwardbackward: 5);
+                    break;
+                case 'a':
+                    camera.move(leftright: 5);
+                    break;
+                case 's':
+                    camera.move(forwardbackward: -5);
+                    break;
+                case 'd':
+                    camera.move(leftright: -5);
+                    break;
+                case 'q':
+                    camera.move(updown: 5);
+                    break;
+                case 'e':
+                    camera.move(updown: -5);
+                    break;
+                case 'i':
+                    camera.changeView(shiftY: 2);
+                    break;
+                case 'j':
+                    camera.changeView(shiftX: -2);
+                    break;
+                case 'k':
+                    camera.changeView(shiftY: -2);
+                    break;
+                case 'l':
+                    camera.changeView(shiftX: 2);
+                    break;
                 default: return;
             }
+
             if (isPruningFaces)
             {
                 shapeWithoutNonFacial = findNonFacial(sceneShapes[listBox.SelectedIndex], camera);
@@ -148,35 +147,22 @@ namespace AdvancedGraphics
             }
             else
                 redrawScene();
+
             //label7.Text = $"{camera.Location}";
             e.Handled = true;
         }
 
         private void z_buffer_Click(object sender, EventArgs e)
         {
-            // colorrange = GenerateColors();
-            // Shape s = Z_buffer.ToCamera(scene[0], camera);
-            // sceneShapes.RemoveAt(0);
-            //sceneShapes.Add(s);
-            // redrawScene();
-            //
-            //List<Shape> vspom=new List<Shape>{ s};
-            // drawShape(s, highlightPen);
             List<Shape> l = sceneShapes.ToList();
-            //canvas.Image = new Bitmap(canvas.Width, canvas.Height);
-            // sceneShapes.Clear();
-            // sceneShapes.Add(l[0]);
-            // redrawScene();
             Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, colorrange);
             canvas.Image = bmp;
             canvas.Invalidate();
         }
+
         private void checkBoxPruneNonFacial_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxPruneNonFacial.Checked == true)
-                isPruningFaces = true;
-            else
-                isPruningFaces = false;
+            isPruningFaces = checkBoxPruneNonFacial.Checked;
             shapeWithoutNonFacial = findNonFacial(sceneShapes[listBox.SelectedIndex], camera);
             redrawShapeWithoutNonFacial();
         }

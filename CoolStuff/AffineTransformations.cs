@@ -10,12 +10,25 @@ namespace GraphicsHelper
     /// <summary>
     /// Тип объёмной фигуры
     /// </summary>
-    public enum ShapeType { TETRAHEDRON, HEXAHEDRON, OCTAHEDRON, ICOSAHEDRON, DODECAHEDRON, ROTATION_SHAPE }
+    public enum ShapeType
+    {
+        TETRAHEDRON,
+        HEXAHEDRON,
+        OCTAHEDRON,
+        ICOSAHEDRON,
+        DODECAHEDRON,
+        ROTATION_SHAPE
+    }
 
     /// <summary>
     /// Тип координатной прямой (для поворотов)
     /// </summary>
-    public enum AxisType { X, Y, Z };
+    public enum AxisType
+    {
+        X,
+        Y,
+        Z
+    };
 
     public class AffineTransformations
     {
@@ -77,13 +90,16 @@ namespace GraphicsHelper
             switch (type)
             {
                 case AxisType.X:
-                    rotation = new Matrix(4, 4).fill(1, 0, 0, 0, 0, Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0, Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1);
+                    rotation = new Matrix(4, 4).fill(1, 0, 0, 0, 0, Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0,
+                        Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1);
                     break;
                 case AxisType.Y:
-                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), 0, Geometry.Sin(angle), 0, 0, 1, 0, 0, -Geometry.Sin(angle), 0, Geometry.Cos(angle), 0, 0, 0, 0, 1);
+                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), 0, Geometry.Sin(angle), 0, 0, 1, 0, 0,
+                        -Geometry.Sin(angle), 0, Geometry.Cos(angle), 0, 0, 0, 0, 1);
                     break;
                 case AxisType.Z:
-                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0, Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0,
+                        Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
                     break;
             }
 
@@ -107,15 +123,18 @@ namespace GraphicsHelper
             // Point scaledvector = new Point(l, m, n);//направленный вектор
             double anglesin = Geometry.Sin(angle);
             double anglecos = Geometry.Cos(angle);
-            Matrix rotation = new Matrix(4, 4).fill(l * l + anglecos * (1 - l * l), l * (1 - anglecos) * m - n * anglesin, l * (1 - anglecos) * n + m * anglesin, 0,
-                                 l * (1 - anglecos) * m + n * anglesin, m * m + anglecos * (1 - m * m), m * (1 - anglecos) * n - l * anglesin, 0,
-                                 l * (1 - anglecos) * n - m * anglesin, m * (1 - anglecos) * n + l * anglesin, n * n + anglecos * (1 - n * n), 0,
-                                 0, 0, 0, 1);
+            Matrix rotation = new Matrix(4, 4).fill(l * l + anglecos * (1 - l * l),
+                l * (1 - anglecos) * m - n * anglesin, l * (1 - anglecos) * n + m * anglesin, 0,
+                l * (1 - anglecos) * m + n * anglesin, m * m + anglecos * (1 - m * m),
+                m * (1 - anglecos) * n - l * anglesin, 0,
+                l * (1 - anglecos) * n - m * anglesin, m * (1 - anglecos) * n + l * anglesin,
+                n * n + anglecos * (1 - n * n), 0,
+                0, 0, 0, 1);
 
             var res = rotation * new Matrix(4, 1).fill(vector1.x, vector1.y, vector1.z, 1);
-            vector1 = new Vector(res[0, 0], res[1, 0], res[2, 0],true);
+            vector1 = new Vector(res[0, 0], res[1, 0], res[2, 0], true);
             res = rotation * new Matrix(4, 1).fill(vector2.x, vector2.y, vector2.z, 1);
-            vector2 = new Vector(res[0, 0], res[1, 0], res[2, 0],true);
+            vector2 = new Vector(res[0, 0], res[1, 0], res[2, 0], true);
         }
     }
-    }
+}

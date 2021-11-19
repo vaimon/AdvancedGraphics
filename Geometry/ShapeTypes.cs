@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace GraphicsHelper
 {
-
     class Tetrahedron : Shape
     {
         public override String getShapeName()
@@ -54,10 +53,10 @@ namespace GraphicsHelper
             return "DODECAHEDRON";
         }
     }
+
     /// <summary>
     /// Класс фигур вращения
     /// </summary>
-
     class RotationShape : Shape
     {
         List<Point> formingline;
@@ -65,18 +64,25 @@ namespace GraphicsHelper
         int Divisions;
         List<Point> allpoints;
         List<Line> edges;
-        List<Line> edges1 = new List<Line>();//ребра
+        List<Line> edges1 = new List<Line>(); //ребра
+
         public RotationShape()
         {
             allpoints = new List<Point>();
             edges = new List<Line>();
         }
-        public List<Line> Edges { get => edges; }
+
+        public List<Line> Edges
+        {
+            get => edges;
+        }
+
         public Shape addEdge(Line edge)
         {
             edges.Add(edge);
             return this;
         }
+
         public Shape addEdges(IEnumerable<Line> ed)
         {
             this.edges.AddRange(ed);
@@ -87,6 +93,7 @@ namespace GraphicsHelper
         {
             this.allpoints.AddRange(points);
         }
+
         public RotationShape(Line ax, int Div, IEnumerable<Point> line) : this()
         {
             this.axiz = ax;
@@ -99,13 +106,17 @@ namespace GraphicsHelper
             allpoints.Add(p);
             return this;
         }
+
         public RotationShape addPoints(IEnumerable<Point> points)
         {
             this.allpoints.AddRange(points);
             return this;
         }
 
-        public List<Point> Points { get => allpoints; }
+        public List<Point> Points
+        {
+            get => allpoints;
+        }
 
         public override String getShapeName()
         {
@@ -117,9 +128,11 @@ namespace GraphicsHelper
     {
         int x0, x1, y0, y1;
         int splitting;
+
         public SurfaceSegment()
         {
         }
+
         public SurfaceSegment(int x0, int x1, int y0, int y1, int splitting)
         {
             this.x0 = x0;
@@ -128,6 +141,7 @@ namespace GraphicsHelper
             this.y1 = y1;
             this.splitting = splitting;
         }
+
         public override String getShapeName()
         {
             return "SURFACESEGMENT";

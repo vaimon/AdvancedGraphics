@@ -176,9 +176,6 @@
             this.canvas.Size = new System.Drawing.Size(1344, 944);
             this.canvas.TabIndex = 19;
             this.canvas.TabStop = false;
-            this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseDown);
-            this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseMove);
-            this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseUp);
             // 
             // groupBox1
             // 

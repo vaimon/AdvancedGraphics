@@ -9,10 +9,18 @@ using System.Threading.Tasks;
 namespace GraphicsHelper
 {
     public delegate void ActionRef<T>(ref T item);
+
     /// <summary>
     /// Тип проекции на экран
     /// </summary>
-    public enum ProjectionType { ISOMETRIC, PERSPECTIVE, TRIMETRIC, DIMETRIC, PARALLEL }
+    public enum ProjectionType
+    {
+        ISOMETRIC,
+        PERSPECTIVE,
+        TRIMETRIC,
+        DIMETRIC,
+        PARALLEL
+    }
 
     class Geometry
     {
@@ -36,10 +44,11 @@ namespace GraphicsHelper
         /// </summary>
         /// <param name="angle">Угол в градусах</param>
         /// <returns></returns>
-        public static double Cos (double angle)
+        public static double Cos(double angle)
         {
             return Math.Cos(degreesToRadians(angle));
         }
+
         /// <summary>
         /// Синус из угла в градусах, ограниченный 5 знаками после запятой
         /// </summary>
@@ -49,6 +58,7 @@ namespace GraphicsHelper
         {
             return Math.Sin(degreesToRadians(angle));
         }
+
         /// <summary>
         /// Перевод точки в другую точку
         /// </summary>
@@ -58,37 +68,38 @@ namespace GraphicsHelper
         public static Point transformPoint(Point p, Matrix matrix)
 
         {
-            var matrfrompoint = new Matrix(4, 1).fill(p.X, p.Y, p.Z,1);
+            var matrfrompoint = new Matrix(4, 1).fill(p.X, p.Y, p.Z, 1);
 
-            var matrPoint = matrix * matrfrompoint;//применение преобразования к точке
+            var matrPoint = matrix * matrfrompoint; //применение преобразования к точке
             //Point newPoint = new Point(matrPoint[0, 0] / matrPoint[3, 0], matrPoint[1, 0] / matrPoint[3, 0], matrPoint[2, 0] / matrPoint[3, 0]);
             Point newPoint = new Point(matrPoint[0, 0], matrPoint[1, 0], matrPoint[2, 0]);
             return newPoint;
-
         }
+
         /// <summary>
         /// Перевод всех точек для тела вращения в другие точки
         /// </summary>
         /// <param name="matrix">Матрица перевода</param>
         ///
-        public static List<Point> transformPointsRotationFig(Matrix matrix,List<Point> allpoints)
+        public static List<Point> transformPointsRotationFig(Matrix matrix, List<Point> allpoints)
         {
             List<Point> clone = allpoints;
             List<Point> res = new List<Point>();
             foreach (var p in clone)
             {
-
                 Point newp = transformPoint(p, matrix);
                 res.Add(newp);
             }
+
             return res;
-        }/// <summary>
+        }
+
+        /// <summary>
         /// Поворот образующей для фигуры вращения
         /// </summary>
         /// <param name="general">образующая</param>
         /// <param name="axis">Ось вращения</param>
         /// <param name="angle">угол вращения</param>
-
         /// <returns></returns>
         public static List<Point> RotatePoint(List<Point> general, AxisType axis, double angle)
         {
@@ -115,5 +126,4 @@ namespace GraphicsHelper
             return res;
         }
     }
-
 }

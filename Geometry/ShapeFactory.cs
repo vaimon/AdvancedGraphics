@@ -69,7 +69,7 @@ namespace GraphicsHelper
             Point d = cube.Faces[3].getCenter();
             Point e = cube.Faces[4].getCenter();
             Point f = cube.Faces[5].getCenter();
-            res.addVerticles(new List<Point> { a, b, c, d, e, f });
+            res.addVerticles(new List<Point> {a, b, c, d, e, f});
             res.addFace(new Face().addEdge(new Line(a, f)).addEdge(new Line(f, b)).addEdge(new Line(b, a))); // ok
             res.addFace(new Face().addEdge(new Line(b, f)).addEdge(new Line(f, c)).addEdge(new Line(c, b))); // ok
             res.addFace(new Face().addEdge(new Line(c, f)).addEdge(new Line(f, d)).addEdge(new Line(d, c))); // ok
@@ -96,12 +96,18 @@ namespace GraphicsHelper
             Point f = new Point(200, 200, 0);
             Point g = new Point(200, 200, 200);
             Point h = new Point(0, 200, 200);
-            res.addFace(new Face().addEdge(new Line(a, d)).addEdge(new Line(d, c)).addEdge(new Line(c, b)).addEdge(new Line(b, a)));
-            res.addFace(new Face().addEdge(new Line(b, c)).addEdge(new Line(c, g)).addEdge(new Line(g, f)).addEdge(new Line(f, b)));
-            res.addFace(new Face().addEdge(new Line(f, g)).addEdge(new Line(g, h)).addEdge(new Line(h, e)).addEdge(new Line(e, f)));
-            res.addFace(new Face().addEdge(new Line(h, d)).addEdge(new Line(d, a)).addEdge(new Line(a, e)).addEdge(new Line(e, h)));
-            res.addFace(new Face().addEdge(new Line(a, b)).addEdge(new Line(b, f)).addEdge(new Line(f, e)).addEdge(new Line(e, a)));
-            res.addFace(new Face().addEdge(new Line(d, h)).addEdge(new Line(h, g)).addEdge(new Line(g, c)).addEdge(new Line(c, d)));
+            res.addFace(new Face().addEdge(new Line(a, d)).addEdge(new Line(d, c)).addEdge(new Line(c, b))
+                .addEdge(new Line(b, a)));
+            res.addFace(new Face().addEdge(new Line(b, c)).addEdge(new Line(c, g)).addEdge(new Line(g, f))
+                .addEdge(new Line(f, b)));
+            res.addFace(new Face().addEdge(new Line(f, g)).addEdge(new Line(g, h)).addEdge(new Line(h, e))
+                .addEdge(new Line(e, f)));
+            res.addFace(new Face().addEdge(new Line(h, d)).addEdge(new Line(d, a)).addEdge(new Line(a, e))
+                .addEdge(new Line(e, h)));
+            res.addFace(new Face().addEdge(new Line(a, b)).addEdge(new Line(b, f)).addEdge(new Line(f, e))
+                .addEdge(new Line(e, a)));
+            res.addFace(new Face().addEdge(new Line(d, h)).addEdge(new Line(h, g)).addEdge(new Line(g, c))
+                .addEdge(new Line(c, d)));
             return res;
         }
 
@@ -118,28 +124,56 @@ namespace GraphicsHelper
             {
                 if (angle % 72 == 0)
                 {
-                    circlePoints.Add(new Point(circleCenter.X + (100 * Math.Cos(Geometry.degreesToRadians(angle))), circleCenter.Y + 100, circleCenter.Z + (100 * Math.Sin(Geometry.degreesToRadians(angle)))));
+                    circlePoints.Add(new Point(circleCenter.X + (100 * Math.Cos(Geometry.degreesToRadians(angle))),
+                        circleCenter.Y + 100, circleCenter.Z + (100 * Math.Sin(Geometry.degreesToRadians(angle)))));
                     continue;
                 }
-                circlePoints.Add(new Point(circleCenter.X + (100 * Math.Cos(Geometry.degreesToRadians(angle))), circleCenter.Y, circleCenter.Z + (100 * Math.Sin(Geometry.degreesToRadians(angle)))));
+
+                circlePoints.Add(new Point(circleCenter.X + (100 * Math.Cos(Geometry.degreesToRadians(angle))),
+                    circleCenter.Y, circleCenter.Z + (100 * Math.Sin(Geometry.degreesToRadians(angle)))));
             }
+
             Point a = new Point(100, 50, 100);
             Point b = new Point(100, 250, 100);
             for (int i = 0; i < 10; i++)
             {
-                res.addFace(new Face().addEdge(new Line(circlePoints[i], circlePoints[(i + 1) % 10])).addEdge(new Line(circlePoints[(i + 1) % 10], circlePoints[(i + 2) % 10])).addEdge(new Line(circlePoints[(i + 2) % 10], circlePoints[i])).addVerticles(new List<Point> { circlePoints[i], circlePoints[(i + 1) % 10], circlePoints[(i + 2) % 10] }));
+                res.addFace(new Face().addEdge(new Line(circlePoints[i], circlePoints[(i + 1) % 10]))
+                    .addEdge(new Line(circlePoints[(i + 1) % 10], circlePoints[(i + 2) % 10]))
+                    .addEdge(new Line(circlePoints[(i + 2) % 10], circlePoints[i])).addVerticles(new List<Point>
+                        {circlePoints[i], circlePoints[(i + 1) % 10], circlePoints[(i + 2) % 10]}));
             }
-            res.addFace(new Face().addEdge(new Line(circlePoints[1], a)).addEdge(new Line(a, circlePoints[3])).addEdge(new Line(circlePoints[3], circlePoints[1])).addVerticles(new List<Point> { circlePoints[1], a, circlePoints[3] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[3], a)).addEdge(new Line(a, circlePoints[5])).addEdge(new Line(circlePoints[5], circlePoints[3])).addVerticles(new List<Point> { circlePoints[3], a, circlePoints[5] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[5], a)).addEdge(new Line(a, circlePoints[7])).addEdge(new Line(circlePoints[7], circlePoints[5])).addVerticles(new List<Point> { circlePoints[5], a, circlePoints[7] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[7], a)).addEdge(new Line(a, circlePoints[9])).addEdge(new Line(circlePoints[9], circlePoints[7])).addVerticles(new List<Point> { circlePoints[7], a, circlePoints[9] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[9], a)).addEdge(new Line(a, circlePoints[1])).addEdge(new Line(circlePoints[1], circlePoints[9])).addVerticles(new List<Point> { circlePoints[9], a, circlePoints[1] }));
 
-            res.addFace(new Face().addEdge(new Line(circlePoints[0], b)).addEdge(new Line(b, circlePoints[2])).addEdge(new Line(circlePoints[2], circlePoints[0])).addVerticles(new List<Point> { circlePoints[0], b, circlePoints[2] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[2], b)).addEdge(new Line(b, circlePoints[4])).addEdge(new Line(circlePoints[4], circlePoints[2])).addVerticles(new List<Point> { circlePoints[2], b, circlePoints[4] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[4], b)).addEdge(new Line(b, circlePoints[6])).addEdge(new Line(circlePoints[6], circlePoints[4])).addVerticles(new List<Point> { circlePoints[4], b, circlePoints[6] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[6], b)).addEdge(new Line(b, circlePoints[8])).addEdge(new Line(circlePoints[8], circlePoints[6])).addVerticles(new List<Point> { circlePoints[6], b, circlePoints[8] }));
-            res.addFace(new Face().addEdge(new Line(circlePoints[8], b)).addEdge(new Line(b, circlePoints[0])).addEdge(new Line(circlePoints[0], circlePoints[8])).addVerticles(new List<Point> { circlePoints[8], b, circlePoints[0] }));
+            res.addFace(new Face().addEdge(new Line(circlePoints[1], a)).addEdge(new Line(a, circlePoints[3]))
+                .addEdge(new Line(circlePoints[3], circlePoints[1]))
+                .addVerticles(new List<Point> {circlePoints[1], a, circlePoints[3]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[3], a)).addEdge(new Line(a, circlePoints[5]))
+                .addEdge(new Line(circlePoints[5], circlePoints[3]))
+                .addVerticles(new List<Point> {circlePoints[3], a, circlePoints[5]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[5], a)).addEdge(new Line(a, circlePoints[7]))
+                .addEdge(new Line(circlePoints[7], circlePoints[5]))
+                .addVerticles(new List<Point> {circlePoints[5], a, circlePoints[7]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[7], a)).addEdge(new Line(a, circlePoints[9]))
+                .addEdge(new Line(circlePoints[9], circlePoints[7]))
+                .addVerticles(new List<Point> {circlePoints[7], a, circlePoints[9]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[9], a)).addEdge(new Line(a, circlePoints[1]))
+                .addEdge(new Line(circlePoints[1], circlePoints[9]))
+                .addVerticles(new List<Point> {circlePoints[9], a, circlePoints[1]}));
+
+            res.addFace(new Face().addEdge(new Line(circlePoints[0], b)).addEdge(new Line(b, circlePoints[2]))
+                .addEdge(new Line(circlePoints[2], circlePoints[0]))
+                .addVerticles(new List<Point> {circlePoints[0], b, circlePoints[2]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[2], b)).addEdge(new Line(b, circlePoints[4]))
+                .addEdge(new Line(circlePoints[4], circlePoints[2]))
+                .addVerticles(new List<Point> {circlePoints[2], b, circlePoints[4]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[4], b)).addEdge(new Line(b, circlePoints[6]))
+                .addEdge(new Line(circlePoints[6], circlePoints[4]))
+                .addVerticles(new List<Point> {circlePoints[4], b, circlePoints[6]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[6], b)).addEdge(new Line(b, circlePoints[8]))
+                .addEdge(new Line(circlePoints[8], circlePoints[6]))
+                .addVerticles(new List<Point> {circlePoints[6], b, circlePoints[8]}));
+            res.addFace(new Face().addEdge(new Line(circlePoints[8], b)).addEdge(new Line(b, circlePoints[0]))
+                .addEdge(new Line(circlePoints[0], circlePoints[8]))
+                .addVerticles(new List<Point> {circlePoints[8], b, circlePoints[0]}));
             return res;
         }
 
@@ -164,14 +198,38 @@ namespace GraphicsHelper
             {
                 if (i % 2 == 0)
                 {
-                    res.addFace(new Face().addEdge(new Line(centers[i], centers[(i + 1) % 10])).addEdge(new Line(centers[(i + 1) % 10], centers[(i + 2) % 10])).addEdge(new Line(centers[(i + 2) % 10], centers[15 + (i / 2 + 1) % 5])).addEdge(new Line(centers[15 + (i / 2 + 1) % 5], centers[15 + i / 2])).addEdge(new Line(centers[15 + i / 2], centers[i])).addVerticles(new List<Point> { centers[i], centers[(i + 1) % 10], centers[(i + 2) % 10], centers[15 + (i / 2 + 1) % 5], centers[15 + i / 2] }));
+                    res.addFace(new Face().addEdge(new Line(centers[i], centers[(i + 1) % 10]))
+                        .addEdge(new Line(centers[(i + 1) % 10], centers[(i + 2) % 10]))
+                        .addEdge(new Line(centers[(i + 2) % 10], centers[15 + (i / 2 + 1) % 5]))
+                        .addEdge(new Line(centers[15 + (i / 2 + 1) % 5], centers[15 + i / 2]))
+                        .addEdge(new Line(centers[15 + i / 2], centers[i])).addVerticles(new List<Point>
+                        {
+                            centers[i], centers[(i + 1) % 10], centers[(i + 2) % 10], centers[15 + (i / 2 + 1) % 5],
+                            centers[15 + i / 2]
+                        }));
 
                     continue;
                 }
-                res.addFace(new Face().addEdge(new Line(centers[i], centers[(i + 1) % 10])).addEdge(new Line(centers[(i + 1) % 10], centers[(i + 2) % 10])).addEdge(new Line(centers[(i + 2) % 10], centers[10 + (i / 2 + 1) % 5])).addEdge(new Line(centers[10 + (i / 2 + 1) % 5], centers[10 + i / 2])).addEdge(new Line(centers[10 + i / 2], centers[i]))).addVerticles(new List<Point> { centers[i], centers[(i + 1) % 10], centers[(i + 2) % 10], centers[10 + (i / 2 + 1) % 5], centers[10 + i / 2] });
+
+                res.addFace(new Face().addEdge(new Line(centers[i], centers[(i + 1) % 10]))
+                    .addEdge(new Line(centers[(i + 1) % 10], centers[(i + 2) % 10]))
+                    .addEdge(new Line(centers[(i + 2) % 10], centers[10 + (i / 2 + 1) % 5]))
+                    .addEdge(new Line(centers[10 + (i / 2 + 1) % 5], centers[10 + i / 2]))
+                    .addEdge(new Line(centers[10 + i / 2], centers[i]))).addVerticles(new List<Point>
+                {
+                    centers[i], centers[(i + 1) % 10], centers[(i + 2) % 10], centers[10 + (i / 2 + 1) % 5],
+                    centers[10 + i / 2]
+                });
             }
-            res.addFace(new Face().addEdge(new Line(centers[15], centers[16])).addEdge(new Line(centers[16], centers[17])).addEdge(new Line(centers[17], centers[18])).addEdge(new Line(centers[18], centers[19])).addEdge(new Line(centers[19], centers[15])).addVerticles(new List<Point> { centers[15], centers[16], centers[17], centers[18], centers[19] }));
-            res.addFace(new Face().addEdge(new Line(centers[10], centers[11])).addEdge(new Line(centers[11], centers[12])).addEdge(new Line(centers[12], centers[13])).addEdge(new Line(centers[13], centers[14])).addEdge(new Line(centers[14], centers[10])).addVerticles(new List<Point> { centers[10], centers[11], centers[12], centers[13], centers[14] }));
+
+            res.addFace(new Face().addEdge(new Line(centers[15], centers[16]))
+                .addEdge(new Line(centers[16], centers[17])).addEdge(new Line(centers[17], centers[18]))
+                .addEdge(new Line(centers[18], centers[19])).addEdge(new Line(centers[19], centers[15]))
+                .addVerticles(new List<Point> {centers[15], centers[16], centers[17], centers[18], centers[19]}));
+            res.addFace(new Face().addEdge(new Line(centers[10], centers[11]))
+                .addEdge(new Line(centers[11], centers[12])).addEdge(new Line(centers[12], centers[13]))
+                .addEdge(new Line(centers[13], centers[14])).addEdge(new Line(centers[14], centers[10]))
+                .addVerticles(new List<Point> {centers[10], centers[11], centers[12], centers[13], centers[14]}));
 
             return res;
         }
@@ -188,13 +246,13 @@ namespace GraphicsHelper
             int GeneralCount = genline.Count();
             //Line axis;
             int Count = divisions;
-            double angle = (360.0 / Count);//угол
-            List<Line> edges1 = new List<Line>();//дно и верхушка
-            List<Line> edges2 = new List<Line>();//
+            double angle = (360.0 / Count); //угол
+            List<Line> edges1 = new List<Line>(); //дно и верхушка
+            List<Line> edges2 = new List<Line>(); //
             List<Point> v = new List<Point>();
             List<Point> v1 = new List<Point>();
-            res.addPoints(genline);//добавили образующую
-            for (int i = 1; i < divisions; i++)//количество разбиений
+            res.addPoints(genline); //добавили образующую
+            for (int i = 1; i < divisions; i++) //количество разбиений
             {
                 res.addPoints(Geometry.RotatePoint(genline, axis, angle * i));
             }
@@ -206,13 +264,12 @@ namespace GraphicsHelper
             {
                 for (int j = 0; j < GeneralCount; j++)
                 {
-                    int index = i * GeneralCount + j;//индекс точки
+                    int index = i * GeneralCount + j; //индекс точки
                     if (index < divisions * GeneralCount)
                     {
                         int e = (index + GeneralCount) % res.Points.Count;
                         if ((index + 1) % GeneralCount == 0)
                         {
-
                             // res.addFace(new Face().addEdge(new Line( res.Points[current], res.Points[e])));
                             res.addEdge(new Line(res.Points[index], res.Points[e]));
                         }
@@ -223,25 +280,29 @@ namespace GraphicsHelper
                             int e1 = (index + 1 + GeneralCount) % res.Points.Count;
                             //добавим грань
                             //res.addFace(new Face().addEdge(new Line(res.Points[index], res.Points[index + 1])).addEdge(new Line(res.Points[index + 1], res.Points[e1])).addEdge(new Line(res.Points[e1], res.Points[e])).addEdge(new Line(res.Points[e], res.Points[index])).addVerticles(new List<Point> { res.Points[index], res.Points[index + 1], res.Points[e1], res.Points[e] }));
-                            res.addFace(new Face().addEdge(new Line(res.Points[e], res.Points[e1])).addEdge(new Line(res.Points[e1], res.Points[index + 1])).addEdge(new Line(res.Points[index + 1], res.Points[index])).addEdge(new Line(res.Points[index], res.Points[e])).addVerticles(new List<Point> { res.Points[index], res.Points[index + 1], res.Points[e1], res.Points[e] }));
-                            edges1.Add(new Line(res.Points[index], res.Points[e1]));//res.Points[index], res.Points[e1])
-                            v.AddRange(new List<Point> { res.Points[index], res.Points[e1] });
-                            edges2.Add(new Line(res.Points[index + 1], res.Points[e]));//res.Points[index+1], res.Points[e]
-                            v1.AddRange(new List<Point> { res.Points[index + 1], res.Points[e] });
+                            res.addFace(new Face().addEdge(new Line(res.Points[e], res.Points[e1]))
+                                .addEdge(new Line(res.Points[e1], res.Points[index + 1]))
+                                .addEdge(new Line(res.Points[index + 1], res.Points[index]))
+                                .addEdge(new Line(res.Points[index], res.Points[e])).addVerticles(new List<Point>
+                                    {res.Points[index], res.Points[index + 1], res.Points[e1], res.Points[e]}));
+                            edges1.Add(new Line(res.Points[index],
+                                res.Points[e1])); //res.Points[index], res.Points[e1])
+                            v.AddRange(new List<Point> {res.Points[index], res.Points[e1]});
+                            edges2.Add(new Line(res.Points[index + 1],
+                                res.Points[e])); //res.Points[index+1], res.Points[e]
+                            v1.AddRange(new List<Point> {res.Points[index + 1], res.Points[e]});
                         }
-
                     }
-
                 }
-
-
             }
+
             res.addFace(new Face().addEdges(edges1).addVerticles(v));
             res.addFace(new Face().addEdges(edges2).addVerticles(v1));
             return res;
         }
 
-        public static SurfaceSegment getSurfaceSegment(Func<double, double, double> fun, int x0, int x1, int y0, int y1, int splitting)
+        public static SurfaceSegment getSurfaceSegment(Func<double, double, double> fun, int x0, int x1, int y0, int y1,
+            int splitting)
         {
             SurfaceSegment res = new SurfaceSegment(x0, x1, y0, y1, splitting);
             double stepX = Math.Abs(x1 - x0) * 1.0 / splitting;
@@ -252,12 +313,15 @@ namespace GraphicsHelper
                 {
                     var face = new Face();
                     face.addEdge(new Line(new Point(x, y, fun(x, y)), new Point(x + stepX, y, fun(x + stepX, y))));
-                    face.addEdge(new Line(new Point(x + stepX, y, fun(x + stepX, y)), new Point(x + stepX, y + stepY, fun(x + stepX, y + stepY))));
-                    face.addEdge(new Line(new Point(x + stepX, y + stepY, fun(x + stepX, y + stepY)), new Point(x, y + stepY, fun(x, y + stepY))));
+                    face.addEdge(new Line(new Point(x + stepX, y, fun(x + stepX, y)),
+                        new Point(x + stepX, y + stepY, fun(x + stepX, y + stepY))));
+                    face.addEdge(new Line(new Point(x + stepX, y + stepY, fun(x + stepX, y + stepY)),
+                        new Point(x, y + stepY, fun(x, y + stepY))));
                     face.addEdge(new Line(new Point(x, y + stepY, fun(x, y + stepY)), new Point(x, y, fun(x, y))));
                     res.addFace(face);
                 }
             }
+
             return res;
         }
     }

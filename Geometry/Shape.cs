@@ -14,6 +14,7 @@ namespace GraphicsHelper
     {
         List<Face> faces;
         List<Point> verticles;
+
         public Shape()
         {
             faces = new List<Face>();
@@ -30,13 +31,18 @@ namespace GraphicsHelper
             faces.Add(face);
             return this;
         }
+
         public Shape addFaces(IEnumerable<Face> faces)
         {
             this.faces.AddRange(faces);
             return this;
         }
 
-        public List<Face> Faces { get => faces; }
+        public List<Face> Faces
+        {
+            get => faces;
+        }
+
         public Shape(IEnumerable<Point> verticles) : this()
         {
             this.verticles.AddRange(verticles);
@@ -47,13 +53,17 @@ namespace GraphicsHelper
             verticles.Add(verticle);
             return this;
         }
+
         public Shape addVerticles(IEnumerable<Point> verticles)
         {
             this.verticles.AddRange(verticles);
             return this;
         }
 
-        public List<Point> Verticles { get => verticles; }
+        public List<Point> Verticles
+        {
+            get => verticles;
+        }
 
         /// <summary>
         /// Преобразует все точки в фигуре по заданной функции
@@ -68,6 +78,7 @@ namespace GraphicsHelper
                     line.start = f(line.start);
                     line.end = f(line.end);
                 }
+
                 face.verticles = face.verticles.Select(x => f(x)).ToList();
             }
         }
@@ -90,6 +101,7 @@ namespace GraphicsHelper
         {
             return "SHAPE";
         }
+
         // читает модель многогранника из файла
         public static Shape readShape(string fileName)
         {
@@ -131,12 +143,14 @@ namespace GraphicsHelper
                         throw new Exception("Такой фигуры нет :с");
                 }
             }
+
             line = sr.ReadLine();
             if (line != null)
             {
                 // какая-то доп информация
                 res.getAdditionalInfo();
             }
+
             line = sr.ReadLine();
             // считываем данные о каждой грани
             while (line != null)
@@ -150,10 +164,13 @@ namespace GraphicsHelper
                     var startPoint = str[0].Split(','); // начало ребра
                     var endPoint = str[1].Split(','); // конец ребра
                     // добавляем новое ребро текущей грани
-                    edgs.Add(new Line(new Point(int.Parse(startPoint[0]), int.Parse(startPoint[1]), int.Parse(startPoint[2])), new Point(int.Parse(endPoint[0]), int.Parse(endPoint[1]), int.Parse(endPoint[2]))));
+                    edgs.Add(new Line(
+                        new Point(int.Parse(startPoint[0]), int.Parse(startPoint[1]), int.Parse(startPoint[2])),
+                        new Point(int.Parse(endPoint[0]), int.Parse(endPoint[1]), int.Parse(endPoint[2]))));
                     verts.Add(new Point(int.Parse(startPoint[0]), int.Parse(startPoint[1]), int.Parse(startPoint[2])));
                     verts.Add(new Point(int.Parse(endPoint[0]), int.Parse(endPoint[1]), int.Parse(endPoint[2])));
                 }
+
                 List<Point> v = Distinct(verts);
                 res.addFace(new Face(edgs).addVerticles(v)); // добавляем целую грань фигуры
                 edgs = new List<Line>();
@@ -161,9 +178,11 @@ namespace GraphicsHelper
                 v.Clear();
                 line = sr.ReadLine();
             }
+
             sr.Close();
             return res;
         }
+
         public static List<Point> Distinct<Point>(List<Point> l)
         {
             List<Point> uniq = new List<Point>();
@@ -172,8 +191,10 @@ namespace GraphicsHelper
                 if (!uniq.Contains(p))
                     uniq.Add(p);
             }
+
             return uniq;
         }
+
         // сохраняет модель многогранника в файл
         public void saveShape(string fileName)
         {
@@ -187,10 +208,13 @@ namespace GraphicsHelper
             {
                 foreach (Line edge in face.Edges)
                 {
-                    sw.Write(edge.Start.X + "," + edge.Start.Y + "," + edge.Start.Z + ";" + edge.End.X + "," + edge.End.Y + "," + edge.End.Z + " ");
+                    sw.Write(edge.Start.X + "," + edge.Start.Y + "," + edge.Start.Z + ";" + edge.End.X + "," +
+                             edge.End.Y + "," + edge.End.Z + " ");
                 }
+
                 sw.WriteLine();
             }
+
             sw.Close();
         }
 

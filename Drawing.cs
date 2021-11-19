@@ -14,7 +14,6 @@ namespace AdvancedGraphics
     public partial class Form1
     {
         bool isAxisVisible = false;
-        //Graphics g;
         Pen blackPen = new Pen(Color.Black, 3);
         Pen highlightPen = new Pen(Color.DarkRed, 3);
         FastBitmap fbitmap;
@@ -49,7 +48,7 @@ namespace AdvancedGraphics
             {
                 drawLine(line, pen);
             }
-            var norm = face.NormVector;
+            //var norm = face.NormVector;
             //drawLine(new Line(face.getCenter(), new Point((int)(face.getCenter().Xf + norm.x * 50), (int)(face.getCenter().Yf + norm.y * 50), (int)(face.getCenter().Zf + norm.z * 50))), new Pen(Color.GreenYellow));
 
         }
@@ -62,24 +61,12 @@ namespace AdvancedGraphics
         void drawLine(Line line, Pen pen)
         {
             PointF? pf1, pf2;
-            //if (rbParallel.Checked)
-            //{
-            //    pf1 = line.Start.to2D(camera);
-            //    pf2 = line.End.to2D(camera);
-            //}
-            //else
-            //{
-            //    pf1 = line.Start.to2D();
-            //    pf2 = line.End.to2D();
-            //}
             pf1 = line.Start.to2D(camera).Item1;
             pf2 = line.End.to2D(camera).Item1;
             if(pf1.HasValue && pf2.HasValue)
             {
                 drawVuLine(new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
             }
-
-            // drawVuLine(new System.Drawing.Point((int)pf1.X, (int)(canvas.Height - pf1.Y)), new System.Drawing.Point((int)pf2.X, (int)(canvas.Height - pf2.Y)), pen.Color);
         }
 
         /// <summary>
@@ -93,9 +80,6 @@ namespace AdvancedGraphics
             drawLine(axisX, new Pen(Color.Red, 4));
             drawLine(axisY, new Pen(Color.Blue, 4));
             drawLine(axisZ, new Pen(Color.Green, 4));
-            //g.DrawString($" X", new Font("Arial", 10, FontStyle.Regular), new SolidBrush(Color.Red), axisX.End.to2D().X, canvas.Height - axisX.End.to2D().Y);
-            //g.DrawString($" Y", new Font("Arial", 10, FontStyle.Regular), new SolidBrush(Color.Blue), axisY.End.to2D().X, canvas.Height - axisY.End.to2D().Y);
-            //g.DrawString($" Z", new Font("Arial", 10, FontStyle.Regular), new SolidBrush(Color.Green), axisZ.End.to2D().X, canvas.Height - axisZ.End.to2D().Y);
         }
 
         /// <summary>
@@ -158,7 +142,6 @@ namespace AdvancedGraphics
             drawLine(new Line(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50)), new Pen(Color.DarkOrange));
             drawLine(new Line(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50)), new Pen(Color.Violet));
 
-            //label6.Text = camera.toCameraView(camera.cameraPosition).ToString();
             fbitmap.Dispose();
             canvas.Image = bitmap;
         }

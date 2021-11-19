@@ -19,8 +19,17 @@ namespace GraphicsHelper
             this.end = end;
         }
 
-        public Point Start { get => start; set => start = value; }
-        public Point End { get => end; set => end = value; }
+        public Point Start
+        {
+            get => start;
+            set => start = value;
+        }
+
+        public Point End
+        {
+            get => end;
+            set => end = value;
+        }
 
         public Point getVectorCoordinates()
         {
