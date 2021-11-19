@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using System;
 using System.Drawing;
 
-namespace AdvancedGraphics
-{ using FastBitmap;
+namespace GraphicsHelper
+{ 
+    using FastBitmap;
     class Z_buffer
     {
         /// <summary>

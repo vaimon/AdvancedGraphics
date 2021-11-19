@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace AdvancedGraphics
+namespace GraphicsHelper
 {
     /// <summary>
     /// Тип объёмной фигуры

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace AdvancedGraphics
 {
     using FastBitmap;
+
+    using GraphicsHelper;
+
     public partial class Form1
     {
         bool isAxisVisible = false;
