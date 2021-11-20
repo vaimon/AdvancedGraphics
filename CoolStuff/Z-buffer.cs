@@ -132,9 +132,9 @@ namespace GraphicsHelper
                 List<Point> currentface = new List<Point>();
                 List<Point> points = new List<Point>();
                 //добавим все вершины
-                for (int i = 0; i < polygon.Verticles.Count(); i++)
+                for (int i = 0; i < polygon.Vertices.Count(); i++)
                 {
-                    points.Add(polygon.Verticles[i]);
+                    points.Add(polygon.Vertices[i]);
                 }
 
                 List<List<Point>> triangles = Triangulate(points); //разбили все грани на треугольники
@@ -171,26 +171,6 @@ namespace GraphicsHelper
                     Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf);
                     res.Add(newpoint);
                 }
-            }
-
-            return res;
-        }
-
-        /// <summary>
-        /// Перевод фигуры в то, как ее видит камера
-        /// </summary>
-        /// <param name="figure">Фигура</param>
-        /// <param name="c">Камера</param>
-        public static Shape ToCamera(Shape figure, Camera c)
-        {
-            Shape res = new Shape();
-            foreach (var face in figure.Faces)
-            {
-                res.addFace(new Face().addVerticles(ProjectionToPlane(face.Verticles, c))
-                    .addEdge(new Line(face.Verticles[0], face.Verticles[1]))
-                    .addEdge(new Line(face.Verticles[1], face.Verticles[2]))
-                    .addEdge(new Line(face.Verticles[2], face.Verticles[3]))
-                    .addEdge(new Line(face.Verticles[3], face.Verticles[1])));
             }
 
             return res;

@@ -13,7 +13,7 @@ namespace GraphicsHelper
     public class Point
     {
         double x, y, z;
-        public static ProjectionType projection = ProjectionType.TRIMETRIC;
+        public static ProjectionType projection = ProjectionType.PERSPECTIVE;
         public static PointF worldCenter;
         static Size screenSize;
         static double zScreenNear, zScreenFar, fov;
@@ -38,6 +38,8 @@ namespace GraphicsHelper
             this.y = y;
             this.z = z;
         }
+
+        public Point(Point point) : this(point.x,point.y,point.z) { }
 
         public override bool Equals(object obj)
         {
@@ -165,7 +167,8 @@ namespace GraphicsHelper
 
                 return null;
             }
-            else if (projection == ProjectionType.PERSPECTIVE)
+
+            if (projection == ProjectionType.PERSPECTIVE)
             {
                 if (viewCoord.Zf < 0)
                 {
@@ -196,14 +199,7 @@ namespace GraphicsHelper
                     new PointF(worldCenter.X + (float) res[0, 0] * worldCenter.X,
                         worldCenter.Y + (float) res[0, 1] * worldCenter.Y), (float) this.Zf);
             }
-            else
-            {
-                return Tuple.Create<PointF?, double>(to2D(), (float) this.Zf);
-            }
-            //else
-            //{
-            //    throw new Exception("Invalid projection type using camera");
-            //}
+            return Tuple.Create<PointF?, double>(to2D(), (float) this.Zf);
         }
 
         public override string ToString()

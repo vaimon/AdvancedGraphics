@@ -24,6 +24,8 @@ namespace GraphicsHelper
             isVectorNeededToBeNormalized)
         {
         }
+        
+        public Vector(Point start, Point end, bool isVectorNeededToBeNormalized = false) : this (end.Xf - start.Xf, end.Yf - start.Yf,end.Zf - start.Zf,isVectorNeededToBeNormalized){}
 
         public Vector normalize()
         {

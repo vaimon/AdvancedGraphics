@@ -11,71 +11,50 @@ namespace GraphicsHelper
     /// </summary>
     public class Face
     {
-        List<Line> edges;
         Vector normVector;
-        public List<Point> verticles;
+        List<Vertex> vertices;
 
         public Face()
         {
-            edges = new List<Line>();
-            verticles = new List<Point>();
+            vertices = new List<Vertex>();
             normVector = new Vector(0, 0, 0);
         }
 
-        public Face(IEnumerable<Line> edges) : this()
+        public Face(IEnumerable<Vertex> vertices) : this()
         {
-            this.edges.AddRange(edges);
+            this.vertices.AddRange(vertices);
         }
 
-        public Face addEdge(Line edge)
+        public Face addVertex(Vertex newPoint)
         {
-            edges.Add(edge);
-            recalculateNormVector();
+            vertices.Add(newPoint);
             return this;
         }
 
-        public Face addEdges(IEnumerable<Line> edges)
+        public Face addVertices(IEnumerable<Vertex> points)
         {
-            this.edges.AddRange(edges);
-            recalculateNormVector();
+            this.vertices.AddRange(points);
             return this;
         }
-
-        public Face addVerticle(Point p)
+        
+        public List<Vertex> Vertices
         {
-            verticles.Add(p);
-            return this;
+            get => vertices;
         }
-
-        public Face addVerticles(IEnumerable<Point> points)
-        {
-            this.verticles.AddRange(points);
-            return this;
-        }
-
-        public List<Point> Verticles
-        {
-            get => verticles;
-        }
-
-        void recalculateNormVector()
-        {
-        }
-
         public Vector NormVector
         {
             get
             {
-                Vector a = new Vector(edges.First().getVectorCoordinates()),
-                    b = new Vector(edges.Last().getReverseVectorCoordinates());
-                normVector = (b * a).normalize();
+                Vector vect1 = new Vector(vertices.First(),vertices[1]);
+                Vector vect2 = new Vector(vertices.First(),vertices.Last());
+                normVector = vect1 * vect2;
                 return normVector;
             }
         }
 
-        public List<Line> Edges
+        public void transformPoints(Func<Vertex,Vertex> f)
         {
-            get => edges;
+            vertices = vertices.Select(f).ToList();
         }
 
         /// <summary>
@@ -85,14 +64,14 @@ namespace GraphicsHelper
         public Point getCenter()
         {
             double x = 0, y = 0, z = 0;
-            foreach (var line in edges)
+            foreach (var point in vertices)
             {
-                x += line.Start.Xf;
-                y += line.Start.Yf;
-                z += line.Start.Zf;
+                x += point.Xf;
+                y += point.Yf;
+                z += point.Zf;
             }
 
-            return new Point(x / edges.Count, y / edges.Count, z / edges.Count);
+            return new Point(x / vertices.Count, y / vertices.Count, z / vertices.Count);
         }
     }
 }
