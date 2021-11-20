@@ -26,15 +26,6 @@ namespace GraphicsHelper
         /// <param name="dx">Сдвиг по оси X</param>
         /// <param name="dy">Сдвиг по оси Y</param>
         /// <param name="dz">Сдвиг по оси Z</param>
-        public static void shift(ref Shape shape, double dx, double dy, double dz)
-        {
-            Matrix shift = new Matrix(4, 4).fill(1, 0, 0, dx, 0, 1, 0, dy, 0, 0, 1, dz, 0, 0, 0, 1);
-            shape.transformPoints((Vertex p) =>
-            {
-                var res = shift * new Matrix(4, 1).fill(p.Xf, p.Yf, p.Zf, 1);
-                return new Vertex(new Point(res[0, 0], res[1, 0], res[2, 0]),p.normVector,p.texturePoint);
-            });
-        }
 
         public static Shape shift(Shape shape, double dx, double dy, double dz)
         {
@@ -54,7 +45,7 @@ namespace GraphicsHelper
         /// <param name="cx">Растяжение по оси X</param>
         /// <param name="cy">Растяжение по оси Y</param>
         /// <param name="cz">Растяжение по оси Z</param>
-        public static void scale(ref Shape shape, double cx, double cy, double cz)
+        public static Shape scale(Shape shape, double cx, double cy, double cz)
         {
             Matrix scale = new Matrix(4, 4).fill(cx, 0, 0, 0, 0, cy, 0, 0, 0, 0, cz, 0, 0, 0, 0, 1);
             shape.transformPoints((Vertex p) =>
@@ -62,6 +53,7 @@ namespace GraphicsHelper
                 var res = scale * new Matrix(4, 1).fill(p.Xf, p.Yf, p.Zf, 1);
                 return new Vertex(new Point(res[0, 0], res[1, 0], res[2, 0]),p.normVector,p.texturePoint);
             });
+            return shape;
         }
 
         /// <summary>
@@ -70,7 +62,7 @@ namespace GraphicsHelper
         /// <param name="shape">Фигура</param>
         /// <param name="type">Ось, вокруг которой поворачиваем</param>
         /// <param name="angle">Угол поворота в градусах</param>
-        public static void rotate(ref Shape shape, AxisType type, double angle)
+        public static Shape rotate(Shape shape, AxisType type, double angle)
         {
             Matrix rotation = new Matrix(0, 0);
 
@@ -95,6 +87,7 @@ namespace GraphicsHelper
                 var res = rotation * new Matrix(4, 1).fill(p.Xf, p.Yf, p.Zf, 1);
                 return new Vertex(new Point(res[0, 0], res[1, 0], res[2, 0]),p.normVector,p.texturePoint);
             });
+            return shape;
         }
 
 

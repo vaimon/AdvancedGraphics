@@ -48,8 +48,9 @@ namespace AdvancedGraphics
             {
                 drawLine(face.Vertices[i],face.Vertices[(i+1) % face.Vertices.Count], pen);
             }
-            var norm = face.NormVector;
-            drawLine(face.getCenter(), new Point((int)(face.getCenter().Xf + norm.x * 50), (int)(face.getCenter().Yf + norm.y * 50), (int)(face.getCenter().Zf + norm.z * 50)), new Pen(Color.GreenYellow));
+            // TODO: Здесь можно включить отображение нормалей грани
+            // var norm = face.NormVector;
+            //drawLine(face.getCenter(), new Point((int)(face.getCenter().Xf + norm.x * 50), (int)(face.getCenter().Yf + norm.y * 50), (int)(face.getCenter().Zf + norm.z * 50)), new Pen(Color.GreenYellow));
         }
 
         /// <summary>

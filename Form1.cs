@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,6 +77,13 @@ namespace AdvancedGraphics
             textShiftZ.Enabled = isOn;
             buttonShift.Enabled = isOn;
             btnShowAxis.Enabled = isOn;
+            textScaleX.Enabled = isOn;
+            textScaleY.Enabled = isOn;
+            textScaleZ.Enabled = isOn;
+            textAngle.Enabled = isOn;
+            selectAxis.Enabled = isOn;
+            buttonScale.Enabled = isOn;
+            buttonRotate.Enabled = isOn;
         }
 
         private void listBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -153,6 +161,18 @@ namespace AdvancedGraphics
             Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, colorrange);
             canvas.Image = bmp;
             canvas.Invalidate();
+        }
+
+        private void buttonRotate_Click(object sender, EventArgs e)
+        {
+            sceneShapes[listBox.SelectedIndex] = AffineTransformations.rotate(sceneShapes[listBox.SelectedIndex],(AxisType)selectAxis.SelectedIndex, double.Parse(textAngle.Text, CultureInfo.InvariantCulture.NumberFormat));
+            
+        }
+
+        private void buttonScale_Click(object sender, EventArgs e)
+        {
+            sceneShapes[listBox.SelectedIndex] = AffineTransformations.scale(sceneShapes[listBox.SelectedIndex],
+                double.Parse(textScaleX.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleY.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleZ.Text, CultureInfo.InvariantCulture.NumberFormat));
         }
     }
 }

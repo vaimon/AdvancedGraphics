@@ -28,12 +28,10 @@ namespace AdvancedGraphics
                     double vectScalar = vectNormal.Xf * vectProec.Xf + vectNormal.Yf * vectProec.Yf +
                                         vectNormal.Zf * vectProec.Zf; // скалярное произведение
 
-                    //face.isFacial = vectScalar > 0;
-                    if(vectScalar <= 0)
-                    {
-                        continue;
-                    }
+                    face.isFacial = vectScalar > 0;
                 }
+
+                
             }
         }
     }
