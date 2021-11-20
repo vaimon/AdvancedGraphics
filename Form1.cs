@@ -140,13 +140,8 @@ namespace AdvancedGraphics
                 default: return;
             }
 
-            if (isPruningFaces)
-            {
-                shapeWithoutNonFacial = findNonFacial(sceneShapes[listBox.SelectedIndex], camera);
-                redrawShapeWithoutNonFacial();
-            }
-            else
-                redrawScene();
+            recalculateNonFacial();
+            redrawScene();
 
             //label7.Text = $"{camera.Location}";
             e.Handled = true;
@@ -158,13 +153,6 @@ namespace AdvancedGraphics
             Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, colorrange);
             canvas.Image = bmp;
             canvas.Invalidate();
-        }
-
-        private void checkBoxPruneNonFacial_CheckedChanged(object sender, EventArgs e)
-        {
-            isPruningFaces = checkBoxPruneNonFacial.Checked;
-            shapeWithoutNonFacial = findNonFacial(sceneShapes[listBox.SelectedIndex], camera);
-            redrawShapeWithoutNonFacial();
         }
     }
 }

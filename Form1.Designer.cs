@@ -47,7 +47,6 @@
             this.rbPerspective = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.z_buffer = new System.Windows.Forms.Button();
-            this.checkBoxPruneNonFacial = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -222,8 +221,8 @@
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.Filter = "Текстовые файлы|*.txt";
-            this.openFileDialog1.InitialDirectory = "C:\\Code\\3DFacesProcessing\\shapes";
+            this.openFileDialog1.Filter = "3D модели|*.obj";
+            this.openFileDialog1.InitialDirectory = "C:\\Code\\AdvancedGraphics\\shapes";
             // 
             // pictureBox1
             // 
@@ -274,23 +273,11 @@
             this.z_buffer.UseVisualStyleBackColor = true;
             this.z_buffer.Click += new System.EventHandler(this.z_buffer_Click);
             // 
-            // checkBoxPruneNonFacial
-            // 
-            this.checkBoxPruneNonFacial.AutoSize = true;
-            this.checkBoxPruneNonFacial.Location = new System.Drawing.Point(65, 756);
-            this.checkBoxPruneNonFacial.Name = "checkBoxPruneNonFacial";
-            this.checkBoxPruneNonFacial.Size = new System.Drawing.Size(190, 29);
-            this.checkBoxPruneNonFacial.TabIndex = 32;
-            this.checkBoxPruneNonFacial.Text = "Отсечь нелицевые";
-            this.checkBoxPruneNonFacial.UseVisualStyleBackColor = true;
-            this.checkBoxPruneNonFacial.CheckedChanged += new System.EventHandler(this.checkBoxPruneNonFacial_CheckedChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1678, 944);
-            this.Controls.Add(this.checkBoxPruneNonFacial);
             this.Controls.Add(this.z_buffer);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.rbPerspective);
@@ -333,6 +320,5 @@
         private System.Windows.Forms.RadioButton rbPerspective;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button z_buffer;
-        private System.Windows.Forms.CheckBox checkBoxPruneNonFacial;
     }
 }

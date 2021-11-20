@@ -13,6 +13,7 @@ namespace GraphicsHelper
     {
         Vector normVector;
         List<Vertex> vertices;
+        public bool isFacial = true;
 
         public Face()
         {

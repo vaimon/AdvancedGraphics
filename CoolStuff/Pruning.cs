@@ -11,28 +11,30 @@ namespace AdvancedGraphics
 {
     public partial class Form1
     {
-        // поиск нелицевых граней
-        Shape findNonFacial(Shape shape, Camera camera)
+        public void recalculateNonFacial()
         {
-            Shape newShape = new Shape();
-            
-            foreach (Face face in shape.Faces) // для каждой грани фигуры
+            for (var i = 0; i < scene.Count; i++)
             {
-                Vector vectProec = new Vector(camera.toCameraView(face.getCenter())).normalize();
+                var shape = scene[i];
+                foreach (Face face in shape.Faces) // для каждой грани фигуры
+                {
+                    var xxx = face.getCenter();
+                    Vector vectProec = new Vector(camera.toCameraView(face.getCenter())).normalize();
 
+                    /* вариант 2 */
+                    Vector vectNormal = face.NormVector;
+                    vectNormal = new Vector(camera.toCameraView(new Point(vectNormal.Xf, vectNormal.Yf, vectNormal.Zf)))
+                        .normalize();
+                    double vectScalar = vectNormal.Xf * vectProec.Xf + vectNormal.Yf * vectProec.Yf +
+                                        vectNormal.Zf * vectProec.Zf; // скалярное произведение
 
-                /* вариант 2 */
-                Vector vectNormal = face.NormVector;
-                vectNormal = new Vector(camera.toCameraView(new Point(vectNormal.Xf, vectNormal.Yf, vectNormal.Zf)))
-                    .normalize();
-                double vectScalar = vectNormal.Xf * vectProec.Xf + vectNormal.Yf * vectProec.Yf +
-                                    vectNormal.Zf * vectProec.Zf; // скалярное произведение
-
-                if (vectScalar > 0)
-                    newShape.addFace(face);
+                    //face.isFacial = vectScalar > 0;
+                    if(vectScalar <= 0)
+                    {
+                        continue;
+                    }
+                }
             }
-
-            return newShape;
         }
     }
 }

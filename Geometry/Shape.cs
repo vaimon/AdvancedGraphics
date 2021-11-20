@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -65,21 +66,25 @@ namespace GraphicsHelper
             var lines = File.ReadAllLines(fileName);
             foreach (var line in lines)
             {
-                var data = line.Split();
+                var data = line.Split(" ",StringSplitOptions.RemoveEmptyEntries);
+                if(data.Count() == 0)
+                {
+                    continue;
+                }
                 if (data[0] == "v")
                 {
-                    vertices.Add(new Point(double.Parse(data[1]) * objScaleFactor,
-                        double.Parse(data[2]) * objScaleFactor, double.Parse(data[3]) * objScaleFactor));
+                    vertices.Add(new Point(double.Parse(data[1], CultureInfo.InvariantCulture.NumberFormat) * objScaleFactor,
+                        double.Parse(data[2], CultureInfo.InvariantCulture.NumberFormat) * objScaleFactor, double.Parse(data[3], CultureInfo.InvariantCulture.NumberFormat) * objScaleFactor));
                 }
 
                 if (data[0] == "vt")
                 {
-                    textureVertices.Add(new TexturePoint(double.Parse(data[1]), double.Parse(data[2])));
+                    textureVertices.Add(new TexturePoint(double.Parse(data[1], CultureInfo.InvariantCulture.NumberFormat), double.Parse(data[2], CultureInfo.InvariantCulture.NumberFormat)));
                 }
 
                 if (data[0] == "vn")
                 {
-                    normales.Add(new Vector(double.Parse(data[1]), double.Parse(data[2]), double.Parse(data[3])));
+                    normales.Add(new Vector(double.Parse(data[1], CultureInfo.InvariantCulture.NumberFormat), double.Parse(data[2], CultureInfo.InvariantCulture.NumberFormat), double.Parse(data[3], CultureInfo.InvariantCulture.NumberFormat)));
                 }
 
                 if (data[0] == "f")
@@ -88,6 +93,10 @@ namespace GraphicsHelper
                     for (int i = 1; i < data.Length; i++)
                     {
                         var stringVertex = data[i].Split("/");
+                        if (stringVertex.Count() < 3)
+                        {
+                            break;
+                        }
                         face.addVertex(new Vertex(vertices[int.Parse(stringVertex[0]) - 1],
                             normales[int.Parse(stringVertex[2]) - 1], textureVertices[int.Parse(stringVertex[1]) - 1]));
                     }
