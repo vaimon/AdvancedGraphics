@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,9 +16,19 @@ namespace GraphicsHelper
     {
         List<Face> faces;
         private const int objScaleFactor = 10;
+        private Color shapeColor;
+        
 
         public Shape()
         {
+            Random rnd = new Random();
+            shapeColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            faces = new List<Face>();
+        }
+        
+        public Shape(Color color)
+        {
+            shapeColor = color;
             faces = new List<Face>();
         }
 
