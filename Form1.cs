@@ -195,5 +195,17 @@ namespace AdvancedGraphics
             sceneShapes[listBox.SelectedIndex] = AffineTransformations.scale(sceneShapes[listBox.SelectedIndex],
                 double.Parse(textScaleX.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleY.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleZ.Text, CultureInfo.InvariantCulture.NumberFormat));
         }
+
+        private void buttonLoadTexture_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                Shape s = Shape.readShape(openFileDialog2.FileName);
+                sceneShapes.Add(s);
+                scene.Add(s);
+                changeToolsAccessibility(true);
+                redrawScene();
+            }
+        }
     }
 }
