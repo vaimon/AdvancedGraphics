@@ -48,7 +48,7 @@ namespace GraphicsHelper
             {
                 Vector vect1 = new Vector(vertices.First(),vertices[1]);
                 Vector vect2 = new Vector(vertices.First(),vertices.Last());
-                normVector = vect1 * vect2;
+                normVector = vect2 * vect1;
                 return normVector;
             }
         }
@@ -73,6 +73,20 @@ namespace GraphicsHelper
             }
 
             return new Point(x / vertices.Count, y / vertices.Count, z / vertices.Count);
+        }
+
+        public bool isLine()
+        {
+            for (int j = 0; j < Vertices.Count; j++)
+            {
+                var dist = Geometry.distance(Vertices[j], Vertices[(j + 1) % Vertices.Count]);
+                if (Geometry.distance(Vertices[j], Vertices[(j + 1) % Vertices.Count]) < 0.1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

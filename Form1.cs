@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AdvancedGraphics.CoolStuff;
 using Point = GraphicsHelper.Point;
 
 namespace AdvancedGraphics
@@ -20,6 +21,7 @@ namespace AdvancedGraphics
         bool isMoving = false;
         bool pruneNonFacial = false;
         Camera camera;
+        LightSource lightSource;
         List<Color> colorrange;
         Shape shapeWithoutNonFacial; // фигура без нелицевых граней
         bool isPruningFaces = false;
@@ -33,6 +35,7 @@ namespace AdvancedGraphics
             listBox.DataSource = sceneShapes;
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             camera = new Camera();
+            lightSource = new LightSource(new Point(100, 100, 100));
             // А здесь задаём точку начала координат
             Point.worldCenter = new PointF(canvas.Width / 2, canvas.Height / 2);
             Point.projection = ProjectionType.PERSPECTIVE;
@@ -144,6 +147,24 @@ namespace AdvancedGraphics
                     break;
                 case 'l':
                     camera.changeView(shiftX: 2);
+                    break;
+                case 'g':
+                    lightSource.move(shiftY: 5);
+                    break;
+                case 'b':
+                    lightSource.move(shiftY: -5);
+                    break;
+                case 'v':
+                    lightSource.move(shiftX: -5);
+                    break;
+                case 'n':
+                    lightSource.move(shiftX: 5);
+                    break;
+                case 'f':
+                    lightSource.move(shiftZ: -5);
+                    break;
+                case 'h':
+                    lightSource.move(shiftZ: 5);
                     break;
                 default: return;
             }

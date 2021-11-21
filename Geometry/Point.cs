@@ -80,19 +80,19 @@ namespace GraphicsHelper
 
         public int X
         {
-            get => (int) x;
+            get => (int) Math.Round(x);
             set => x = value;
         }
 
         public int Y
         {
-            get => (int) y;
+            get => (int) Math.Round(y);
             set => y = value;
         }
 
         public int Z
         {
-            get => (int) z;
+            get => (int) Math.Round(z);
             set => z = value;
         }
 

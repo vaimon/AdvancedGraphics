@@ -101,7 +101,10 @@ namespace GraphicsHelper
                             normales[int.Parse(stringVertex[2]) - 1], textureVertices[int.Parse(stringVertex[1]) - 1]));
                     }
 
-                    res.addFace(face);
+                    if (!face.isLine())
+                    {
+                        res.addFace(face);
+                    }
                 }
             }
 

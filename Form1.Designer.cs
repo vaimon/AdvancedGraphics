@@ -59,6 +59,7 @@
             this.rbPerspective = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.z_buffer = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -430,11 +431,23 @@
             this.z_buffer.UseVisualStyleBackColor = true;
             this.z_buffer.Click += new System.EventHandler(this.z_buffer_Click);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.BackColor = System.Drawing.Color.White;
+            this.label9.Location = new System.Drawing.Point(340, 9);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(326, 75);
+            this.label9.TabIndex = 32;
+            this.label9.Text = "WASDQE - положение камеры\r\nIJKL - наклон камеры\r\nGVBNFH - положение источника све" +
+    "та";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1678, 944);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.z_buffer);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.rbPerspective);
@@ -489,5 +502,6 @@
         private System.Windows.Forms.ComboBox selectAxis;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textAngle;
+        private System.Windows.Forms.Label label9;
     }
 }

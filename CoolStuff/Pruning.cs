@@ -13,12 +13,16 @@ namespace AdvancedGraphics
     {
         public void recalculateNonFacial()
         {
-            for (var i = 0; i < scene.Count; i++)
+            foreach (var shape in scene)
             {
-                var shape = scene[i];
                 foreach (Face face in shape.Faces) // для каждой грани фигуры
                 {
-                    var xxx = face.getCenter();
+                    // if (face.isLine())
+                    // {
+                    //     face.isFacial = false;
+                    //     continue;
+                    // }
+
                     Vector vectProec = new Vector(camera.toCameraView(face.getCenter())).normalize();
 
                     /* вариант 2 */
@@ -30,8 +34,6 @@ namespace AdvancedGraphics
 
                     face.isFacial = vectScalar > 0;
                 }
-
-                
             }
         }
     }

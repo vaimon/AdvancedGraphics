@@ -59,6 +59,11 @@ namespace GraphicsHelper
             return Math.Sin(degreesToRadians(angle));
         }
 
+        public static double distance(Point p1, Point p2)
+        {
+            return Math.Sqrt(Math.Pow(p1.X * 100 - p2.X * 100,2) + Math.Pow(p1.Y * 100 - p2.Y * 100,2) + Math.Pow(p1.Z * 100 - p2.Z * 100,2));
+        }
+
         /// <summary>
         /// Перевод точки в другую точку
         /// </summary>
