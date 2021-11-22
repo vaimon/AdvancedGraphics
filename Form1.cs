@@ -44,9 +44,8 @@ namespace AdvancedGraphics
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //var form = new FormEditShape();
-            //form.Show();
-            Point.projection = ProjectionType.PERSPECTIVE;
+            var form = new FormPlotting();
+            form.Show();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
