@@ -206,5 +206,15 @@ namespace GraphicsHelper
         {
             return $"({X}, {Y}, {Z})";
         }
+
+        public static Point operator -(Point p1, Point p2)
+        {
+            return new Point(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
+        }
+
+        public static Point operator *(Point a, Point b)
+        {
+            return new Point(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+        }
     }
 }

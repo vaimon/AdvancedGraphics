@@ -394,7 +394,7 @@
             // 
             // openFileDialog2
             // 
-            this.openFileDialog2.Filter = "Текстуры|*.png";
+            this.openFileDialog2.Filter = "Текстуры|*.png;*.jpeg;*.jpg";
             this.openFileDialog2.InitialDirectory = "C:\\Code\\AdvancedGraphics\\textures";
             // 
             // pictureBox1
@@ -480,6 +480,7 @@
             this.buttonTexturing.TabIndex = 35;
             this.buttonTexturing.Text = "Текстурировать";
             this.buttonTexturing.UseVisualStyleBackColor = true;
+            this.buttonTexturing.Click += new System.EventHandler(this.buttonTexturing_Click);
             // 
             // buttonLighting
             // 

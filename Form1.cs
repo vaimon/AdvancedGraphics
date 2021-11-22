@@ -25,6 +25,7 @@ namespace AdvancedGraphics
         List<Color> colorrange;
         Shape shapeWithoutNonFacial; // фигура без нелицевых граней
         bool isPruningFaces = false;
+        string textureFileName = "";
 
         public Form1()
         {
@@ -200,12 +201,16 @@ namespace AdvancedGraphics
         {
             if (openFileDialog2.ShowDialog() == DialogResult.OK)
             {
-                Shape s = Shape.readShape(openFileDialog2.FileName);
-                sceneShapes.Add(s);
-                scene.Add(s);
-                changeToolsAccessibility(true);
-                redrawScene();
+                textureFileName = openFileDialog2.FileName;
             }
+        }
+
+        private void buttonTexturing_Click(object sender, EventArgs e)
+        {
+            List<Shape> l = sceneShapes.ToList();
+            Bitmap bmp = Z_buffer.z_buf_texturing(canvas.Width, canvas.Height, l, camera, textureFileName);
+            canvas.Image = bmp;
+            canvas.Invalidate();
         }
     }
 }
