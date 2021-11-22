@@ -69,6 +69,11 @@ namespace AdvancedGraphics
                 drawVuLine(new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
             }
         }
+        void DrawPoint(Point p)
+        {
+            drawVuLine(new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
+            drawVuLine(new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
+        }
 
         /// <summary>
         /// Рисует коодинатные прямые (с подписями) и подписывает координаты каждой точки
@@ -107,6 +112,7 @@ namespace AdvancedGraphics
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraDirection.x * 50, camera.cameraPosition.Yf + camera.cameraDirection.y * 50, camera.cameraPosition.Zf + camera.cameraDirection.z * 50), new Pen(Color.CadetBlue));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50), new Pen(Color.DarkOrange));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50), new Pen(Color.Violet));
+            DrawPoint(lightSource.Position);
             fbitmap.Dispose();
             canvas.Image = bitmap;
         }
