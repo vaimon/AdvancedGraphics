@@ -13,6 +13,7 @@ namespace GraphicsHelper
     public class Point
     {
         double x, y, z;
+        public double lightness;//для интенсивности освещения
         public static ProjectionType projection = ProjectionType.PERSPECTIVE;
         public static PointF worldCenter;
         static Size screenSize;
@@ -32,14 +33,15 @@ namespace GraphicsHelper
         static Matrix parallelProjectionMatrix, perspectiveProjectionMatrix;
         const double k = 0.001f;
 
-        public Point(int x, int y, int z)
+        public Point(int x, int y, int z,double light=1.0)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            this.lightness = light;
         }
 
-        public Point(Point point) : this(point.x,point.y,point.z) { }
+        public Point(Point point) : this(point.x,point.y,point.z,point.lightness) { }
 
         public override bool Equals(object obj)
         {
@@ -71,11 +73,12 @@ namespace GraphicsHelper
                 -2 * (zScreenFar * zScreenNear) / (zScreenFar - zScreenNear), 0, 0, -1, 0);
         }
 
-        public Point(double x, double y, double z)
+        public Point(double x, double y, double z,double light=1.0)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            this.lightness = light;
         }
 
         public int X
@@ -112,6 +115,12 @@ namespace GraphicsHelper
         {
             get => z;
             set => z = value;
+        }
+        public double light
+        {
+            get => lightness;
+                
+            set => lightness = value;
         }
 
         /// <summary>

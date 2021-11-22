@@ -207,5 +207,12 @@ namespace AdvancedGraphics
                 redrawScene();
             }
         }
+
+        private void buttonLighting_Click(object sender, EventArgs e)
+        {
+            Bitmap bmp = Lighting.z_buf(canvas.Width, canvas.Height, sceneShapes[0], lightSource, sceneShapes[0].GetColor, camera);
+            canvas.Image = bmp;
+            canvas.Invalidate();
+        }
     }
 }

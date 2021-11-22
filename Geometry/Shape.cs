@@ -53,6 +53,10 @@ namespace GraphicsHelper
         {
             get => faces;
         }
+        public Color GetColor
+        {
+            get => shapeColor;
+        }
 
 
         /// <summary>
