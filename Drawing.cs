@@ -66,7 +66,7 @@ namespace AdvancedGraphics
             var pf2 = end.to2D(camera).Item1;
             if(pf1.HasValue && pf2.HasValue)
             {
-                drawVuLine(new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
+                AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
             }
         }
 

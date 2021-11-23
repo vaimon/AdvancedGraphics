@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GraphicsHelper;
 
 namespace AdvancedGraphics
 {
@@ -21,6 +22,7 @@ namespace AdvancedGraphics
         {
             InitializeComponent();
             displayType = DisplayType.TRIANGLES;
+            camera = new Camera();
         }
 
         void setPBStyles(int selectedPBIndex)
@@ -43,32 +45,37 @@ namespace AdvancedGraphics
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            SelectedFunction = (double x, double y) => { return x * x + y * y; };
+            SelectedFunction = (double x, double y) => x * x + y * y;
             setPBStyles(2);
+            redraw();
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)
         {
-            SelectedFunction = (double x, double y) => { return Math.Sin(x) + Math.Cos(y); };
+            SelectedFunction = (double x, double y) => Math.Sin(x) + Math.Cos(y);
             setPBStyles(3);
+            redraw();
         }
 
         private void pictureBox5_Click(object sender, EventArgs e)
         {
-            SelectedFunction = (double x, double y) => { return Math.Sin(x) * Math.Cos(y); };
+            SelectedFunction = (double x, double y) => Math.Sin(x) * Math.Cos(y);
             setPBStyles(5);
+            redraw();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            SelectedFunction = (double x, double y) => { return 5 * (Math.Cos(x * x + y * y + 1) / (x * x + y * y + 1) + 0.1); };
+            SelectedFunction = (double x, double y) => 5 * (Math.Cos(x * x + y * y + 1) / (x * x + y * y + 1) + 0.1);
             setPBStyles(1);
+            redraw();
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
         {
-            SelectedFunction = (double x, double y) => { return (Math.Sin(x) + Math.Sin(y)) * Math.Pow(Math.Cos(x + y), 2); };
+            SelectedFunction = (double x, double y) => (Math.Sin(x) + Math.Sin(y)) * Math.Pow(Math.Cos(x + y), 2);
             setPBStyles(4);
+            redraw();
         }
 
         private void rbTriangles_CheckedChanged(object sender, EventArgs e)

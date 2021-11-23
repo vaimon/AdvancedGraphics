@@ -11,14 +11,14 @@ using Point = GraphicsHelper.Point;
 
 namespace AdvancedGraphics
 {
-    public partial class Form1
+    public class AdditionalAlgorithms
     {
         public static byte bytify(double color)
         {
             return (byte)Math.Round(255 * color);
         }
 
-        private float frac(double f)
+        private static float frac(double f)
         {
             return (float)(f - Math.Truncate(f));
         }
@@ -28,7 +28,7 @@ namespace AdvancedGraphics
         /// </summary>
         /// <param name="p0"></param>
         /// <param name="p1"></param>
-        private void drawVuLine(System.Drawing.Point p0, System.Drawing.Point p1, Color color)
+        public static void drawVuLine(ref FastBitmap.FastBitmap fbitmap, System.Drawing.Point p0, System.Drawing.Point p1, Color color)
         {
             float x0 = p0.X, x1 = p1.X, y0 = p0.Y, y1 = p1.Y;
             bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);

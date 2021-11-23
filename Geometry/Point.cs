@@ -155,6 +155,7 @@ namespace GraphicsHelper
         public Tuple<PointF?, double> to2D(Camera cam)
         {
             var viewCoord = cam.toCameraView(this);
+            var anti = cam.toWorldView(viewCoord);
 
             if (projection == ProjectionType.PARALLEL)
             {
