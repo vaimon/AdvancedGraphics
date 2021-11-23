@@ -64,6 +64,7 @@
             this.buttonLoadTexture = new System.Windows.Forms.Button();
             this.buttonTexturing = new System.Windows.Forms.Button();
             this.buttonLighting = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -492,11 +493,21 @@
             this.buttonLighting.UseVisualStyleBackColor = true;
             this.buttonLighting.Click += new System.EventHandler(this.buttonLighting_Click);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(285, 85);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(58, 20);
+            this.label10.TabIndex = 39;
+            this.label10.Text = "label10";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1343, 840);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.buttonLighting);
             this.Controls.Add(this.buttonTexturing);
             this.Controls.Add(this.buttonLoadTexture);
@@ -561,5 +572,6 @@
         private System.Windows.Forms.Button buttonLoadTexture;
         private System.Windows.Forms.Button buttonTexturing;
         private System.Windows.Forms.Button buttonLighting;
+        private System.Windows.Forms.Label label10;
     }
 }

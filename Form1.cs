@@ -36,7 +36,7 @@ namespace AdvancedGraphics
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             camera = new Camera();
             // lightSource = new LightSource(new Point(100, 100, 100));
-            lightSource = new LightSource(new Point(-10, 0, 100));
+            lightSource = new LightSource(new Point(400, 400, 400));
           
             // А здесь задаём точку начала координат
             Point.worldCenter = new PointF(canvas.Width / 2, canvas.Height / 2);
@@ -216,6 +216,7 @@ namespace AdvancedGraphics
             Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height, sceneShapes[0], lightSource, sceneShapes[0].GetColor, camera);
             canvas.Image = bmp;
             canvas.Invalidate();
+            //redrawScene();
         }
     }
 }

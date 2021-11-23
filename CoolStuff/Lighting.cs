@@ -31,34 +31,68 @@ namespace GraphicsHelper
         {
             return (lightness+1) /2;
         }
-        public static void CalculateLambert(Face f, Color c, AdvancedGraphics.CoolStuff.LightSource light)
+        public static Vector NormalVertex(List<Face> faces, Shape s)
         {
-            //посчитать яркость в каждой вершине многоугольника
-            foreach (var vert in f.Vertices)
+            Vector res=new Vector(0,0,0);
+            foreach (var face in faces)
             {
-                double lamb = GetLightness(vert,light);
-                double intense = GetIntense(lamb, c);
-                vert.lightness = intense;
+                res.Xf += face.NormVector.Xf;
+                res.Yf += face.NormVector.Yf;
+                res.Zf += face.NormVector.Zf;
+            }
+            res.Xf = res.Xf / faces.Count();
+            res.Yf = res.Yf / faces.Count();
+            res.Zf = res.Zf / faces.Count();
+            return res;
+        }
+        public static void CalculateLambert(Shape s, Color c,AdvancedGraphics.CoolStuff.LightSource light)
+        {
+            Dictionary<Vertex, Vector> normales = new Dictionary<Vertex, Vector>();
+            for (int i = 0; i < s.Faces.Count; i++)
+            {
+                Face f = s.Faces[i];
+                foreach (var vert in f.Vertices)
+                {
+                    List<Face> faces = s.Faces.Where(x => x.Vertices.Contains(vert)).ToList();//все грани, содержащие данную вершину
+                    vert.normVector = NormalVertex(faces, s);
+                   // normales.Add(vert, NormalVertex(faces, s));
+                }
+
+               // List<Face> neededFaces = s.Faces.Where(x => x.Contains(i)).ToList();
+               // pointNormal.Add(i, Vectors.CalculateNormal(neededFaces, polyhedron));
+            }
+
+            //посчитать вектор нормали для каждой вершины
+            foreach (var f in s.Faces)
+            {
+                //посчитать яркость в каждой вершине многоугольника
+                foreach (var vert in f.Vertices)
+                {
+                    double lamb = GetLightness(vert, light);
+                    double intense = GetIntense(lamb, c);
+                    vert.lightness = intense;
+                }
             }
         }
-        public static void CalculateLambertFigure(Shape s, AdvancedGraphics.CoolStuff.LightSource light)
-        {
+        //public static void CalculateLambertFigure(Shape s, AdvancedGraphics.CoolStuff.LightSource light)
+        //{
             //считаем для каждой грани
-            foreach (var face in s.Faces)
-            {
+           // foreach (var face in s.Faces)
+           // {
                 //для каждой вершины грани
-                CalculateLambert(face, s.GetColor, light);
-            }
-        }
+             //   CalculateLambert(s, s.GetColor, light);
+            //}
+        //}
         public static Bitmap Method_Guro(int width, int height, Shape shape, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
         {
-            CalculateLambertFigure(shape, light);
+            CalculateLambert(shape, color,light);
             bool mode = true;
             Bitmap canvas = new Bitmap(width, height);
             //new FastBitmap(bitmap);
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
-                    canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
+                    canvas.SetPixel(i, j, Color.White);//new System.Drawing.Point(i, j)
+           
             //z-буфер
             double[,] zbuffer = new double[width, height];
             for (int i = 0; i < width; i++)
@@ -69,7 +103,7 @@ namespace GraphicsHelper
                 rasterscene=GraphicsHelper.Z_buffer.RasterFigure(shape, camera,mode); //растеризовали все фигуры
             int withmiddle = width / 2;
             int heightmiddle = height / 2;
-            int index = 0;
+            //int index = 0;
             for (int i = 0; i < rasterscene.Count(); i++)
             {               
                     List<Point> current = rasterscene[i]; //это типа грань но уже растеризованная
@@ -89,11 +123,12 @@ namespace GraphicsHelper
                         }
                     }
 
-                   index++;
+                   //index++;
                 
             }
 
             return canvas;
+           
         }
     }
 

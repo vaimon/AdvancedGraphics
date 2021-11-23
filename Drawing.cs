@@ -113,7 +113,18 @@ namespace AdvancedGraphics
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50), new Pen(Color.DarkOrange));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50), new Pen(Color.Violet));
             DrawPoint(lightSource.Position);
+
             fbitmap.Dispose();
+            String text = "x:";
+            text += lightSource.Position.Xf.ToString();
+           
+            text += "y:";
+            text += lightSource.Position.Yf.ToString();
+            
+            text += "z:";
+            text += lightSource.Position.Zf.ToString();
+            
+            label10.Text = text;
             canvas.Image = bitmap;
         }
         /// <summary>

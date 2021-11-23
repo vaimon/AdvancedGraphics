@@ -68,7 +68,7 @@ namespace GraphicsHelper
             points.Sort((p1, p2) => p1.Y.CompareTo(p2.Y));
             // "рабочие точки"
             // изначально они находятся в верхней точке
-            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z,intense: p.lightness)).ToList();
+            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z,intense: p.light)).ToList();
             var xy01 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[1].y, wpoints[1].x);
             var xy12 = interpolate(wpoints[1].y, wpoints[1].x, wpoints[2].y, wpoints[2].x);
             var xy02 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[2].y, wpoints[2].x);
@@ -86,6 +86,21 @@ namespace GraphicsHelper
             List<double> leftintense, rightintense;//для приращений по интенсивности цвета
             leftintense = new List<double>();
             rightintense = new List<double>();
+            if (xy02[center] < xy[center])
+            {
+                lx = xy02;
+                lz = yz02;
+                rx = xy;
+                rz = yz;
+            }
+            else
+            {
+                lx = xy;
+                lz = yz;
+                rx = xy02;
+                rz = yz02;
+            }
+
             if (mode)
             {
                 var lighting01 = interpolate_intense(wpoints[0].y, wpoints[0].intense, wpoints[1].y, wpoints[1].intense);
@@ -109,21 +124,7 @@ namespace GraphicsHelper
                 //ищем координаты, чтобы разделить треугольник на 2
 
             }
-            if (xy02[center] < xy[center])
-            {
-                lx = xy02;
-                lz = yz02;
-                rx = xy;
-                rz = yz;
-            }
-            else
-            {
-                lx = xy;
-                lz = yz;
-                rx = xy02;
-                rz = yz02;
-            }
-
+          
             int y0 = wpoints[0].y;
             int y2 = wpoints[2].y;
             for (int i = 0; i <= y2 - y0; i++)
@@ -223,7 +224,7 @@ namespace GraphicsHelper
                     // Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y,current.Item2);
                     //var current = transformPoint(p, matrix);
                     var tocamv = camera.toCameraView(p);
-                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf);
+                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf,p.lightness);
                     res.Add(newpoint);
                 }
             }
