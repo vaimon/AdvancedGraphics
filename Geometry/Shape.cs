@@ -57,6 +57,10 @@ namespace GraphicsHelper
         {
             get => shapeColor;
         }
+        public void SetColor(Color c)
+        {
+            this.shapeColor=c;
+        }
 
 
         /// <summary>

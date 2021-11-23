@@ -29,7 +29,7 @@ namespace GraphicsHelper
 
         public static double GetIntense(double lightness, Color c)
         {
-            return lightness * c.A;
+            return (lightness+1) /2;
         }
         public static void CalculateLambert(Face f, Color c, AdvancedGraphics.CoolStuff.LightSource light)
         {
@@ -50,9 +50,10 @@ namespace GraphicsHelper
                 CalculateLambert(face, s.GetColor, light);
             }
         }
-        public static Bitmap z_buf(int width, int height, Shape shape, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
+        public static Bitmap Method_Guro(int width, int height, Shape shape, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
         {
             CalculateLambertFigure(shape, light);
+            bool mode = true;
             Bitmap canvas = new Bitmap(width, height);
             //new FastBitmap(bitmap);
             for (int i = 0; i < width; i++)
@@ -64,22 +65,20 @@ namespace GraphicsHelper
                 for (int j = 0; j < height; j++)
                     zbuffer[i, j] = double.MaxValue; //Изначально, буфер
             // инициализируется значением z = zmax
-            List<List<List<Point>>> rasterscene = new List<List<List<Point>>>();
-                rasterscene.Add(GraphicsHelper.Z_buffer.RasterFigure(shape, camera)); //растеризовали все фигуры
+            List<List<Point>> rasterscene = new List<List<Point>>();
+                rasterscene=GraphicsHelper.Z_buffer.RasterFigure(shape, camera,mode); //растеризовали все фигуры
             int withmiddle = width / 2;
             int heightmiddle = height / 2;
             int index = 0;
             for (int i = 0; i < rasterscene.Count(); i++)
-            {
-                for (int j = 0; j < rasterscene[i].Count(); j++)
-                {
-                    List<Point> current = rasterscene[i][j]; //это типа грань но уже растеризованная
+            {               
+                    List<Point> current = rasterscene[i]; //это типа грань но уже растеризованная
                     foreach (Point p in current)
                     {
                         int x = (int)(p.X); //
 
                         int y = (int)(p.Y); // + heightmiddle 
-                        ;
+                        
                         if (x < width && y < height && y > 0 && x > 0)
                         {
                             if (p.Zf < zbuffer[x, y])
@@ -90,8 +89,8 @@ namespace GraphicsHelper
                         }
                     }
 
-                    index++;
-                }
+                   index++;
+                
             }
 
             return canvas;

@@ -35,7 +35,9 @@ namespace AdvancedGraphics
             listBox.DataSource = sceneShapes;
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             camera = new Camera();
-            lightSource = new LightSource(new Point(100, 100, 100));
+            // lightSource = new LightSource(new Point(100, 100, 100));
+            lightSource = new LightSource(new Point(-10, 0, 100));
+          
             // А здесь задаём точку начала координат
             Point.worldCenter = new PointF(canvas.Width / 2, canvas.Height / 2);
             Point.projection = ProjectionType.PERSPECTIVE;
@@ -210,7 +212,8 @@ namespace AdvancedGraphics
 
         private void buttonLighting_Click(object sender, EventArgs e)
         {
-            Bitmap bmp = Lighting.z_buf(canvas.Width, canvas.Height, sceneShapes[0], lightSource, sceneShapes[0].GetColor, camera);
+            sceneShapes[0].SetColor(Color.Red);
+            Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height, sceneShapes[0], lightSource, sceneShapes[0].GetColor, camera);
             canvas.Image = bmp;
             canvas.Invalidate();
         }
