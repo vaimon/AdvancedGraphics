@@ -44,7 +44,7 @@ namespace GraphicsHelper
             double X = (a.Xf + e1.Xf + e2.Xf) / (a.Zf + e1.Zf + e2.Zf);
             double Y = (a.Yf + e1.Yf + e2.Yf) / (a.Zf + e1.Zf + e2.Zf);
 
-            Vector n = e1 * e2;
+            Vector n = (e1 * e2).normalize();
             Vector m = (e2 * a).normalize();
             Vector l = (a * e1).normalize();
 
@@ -122,7 +122,7 @@ namespace GraphicsHelper
                     Point aa = new Point(j, y0 + i, zcurr[j - leftx]);
                     res.Add(aa);
 
-                    Vector a = new Vector(aa);
+                    Vector a = new Vector(aa, true);
                     Vector e1 = (texture_p2 - a).normalize();
                     Vector e2 = (texture_p4 - a).normalize();
                     TexturePoint tp = interpolateTexture(a, e1, e2);
@@ -388,7 +388,7 @@ points[i]}); //points[0]
                                     //else if (texels[v].U < -1)
                                     //    w = widthTextureMiddle + widthTextureMiddle * (-1);
                                     //else
-                                        w = /*widthTextureMiddle +*/ widthTexture * texels[pxl].U*100 % widthTexture;
+                                        w = /*widthTextureMiddle +*/ (widthTexture-1) * texels[pxl].U% widthTexture;
 
                                     //if (texels[v].V < 0)
                                     //    h = heightTextureMiddle + heightTexture * texels[v].V;
@@ -399,7 +399,7 @@ points[i]}); //points[0]
                                     //else if (texels[v].V < -1)
                                     //    h = heightTextureMiddle + heightTextureMiddle *(-1);
                                     //else
-                                    h = /*heightTextureMiddle + */heightTexture * texels[pxl].V*100 % heightTexture;
+                                    h = /*heightTextureMiddle + */( heightTexture-1) * texels[pxl].V% heightTexture;
 
                                     //var w = Math.Abs(widthTexture * texels[v].U);
                                     //var h = Math.Abs(heightTexture * texels[v].V);
