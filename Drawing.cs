@@ -112,7 +112,8 @@ namespace AdvancedGraphics
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraDirection.x * 50, camera.cameraPosition.Yf + camera.cameraDirection.y * 50, camera.cameraPosition.Zf + camera.cameraDirection.z * 50), new Pen(Color.CadetBlue));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50), new Pen(Color.DarkOrange));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50), new Pen(Color.Violet));
-            DrawPoint(lightSource.Position);
+            List<Point> lig= Z_buffer.ProjectionToPlane(new List<Point> { lightSource.Position },camera);
+            DrawPoint(lig[0]);
 
             fbitmap.Dispose();
             String text = "x:";

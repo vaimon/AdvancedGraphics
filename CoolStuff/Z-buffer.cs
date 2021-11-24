@@ -37,6 +37,15 @@ namespace GraphicsHelper
 
             return res;
         }
+        //https://habr.com/ru/post/342708/
+        //интерполяция освещенности
+        /// <summary>
+        /// https://habr.com/ru/post/342708/
+        /// </summary>
+        /// <param name="x1">Стартовая точка</param>
+        /// <param name="i1">Стартовая точка</param>
+        /// <param name="x2">Конечная точка</param>
+        /// <param name="i2">Конечная точка</param>
         public static List<double> interpolate_intense(int x1, double i1, int x2, double i2)
         {
             List<double> res = new List<double>();

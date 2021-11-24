@@ -21,7 +21,8 @@ namespace GraphicsHelper
             //
             //cos α = a·b/
             //|a |·| b |
-            double cos = Vector.GetCos(normv, raytovertex);
+            double cos =Math.Max( Vector.GetCos(normv, raytovertex),0.0);
+            //добавить max(cos,0)
             return cos;
         }
         //Имеется также простая зависимость между силой света, излучаемого плоской рассеивающей площадкой {\displaystyle dS}dS в каком-либо направлении, от угла {\displaystyle \alpha }\alpha  между этим направлением и перпендикуляром к {\displaystyle dS}dS:
