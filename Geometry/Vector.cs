@@ -91,5 +91,19 @@ namespace GraphicsHelper
         {
             return new Vector(k * b.x, k * b.y, k * b.z);
         }
+
+        public static bool operator ==(Vector a, Vector b)
+        {
+            if (a == null || b == null)
+                return false;
+            return a.Xf == b.Xf && a.Yf == b.Yf && a.Zf == b.Zf;
+        }
+
+        public static bool operator !=(Vector a, Vector b)
+        {
+            if (a == null || b == null)
+                return true;
+            return a.Xf != b.Xf || a.Yf != b.Yf || a.Zf != b.Zf;
+        }
     }
 }
