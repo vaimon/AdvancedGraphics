@@ -11,13 +11,16 @@ namespace AdvancedGraphics
     {
         private const int scaleFactor = 100;
         private const double threshold = 5;
+        private const double splitting = 50;
         private double yawAngle;
         private double pitchAngle;
 
-        static Point getScaledPoint(double x, double y, double z)
+        Point getScaledPoint(Point p)
         {
-            return new Point(Point.worldCenter.X + scaleFactor * x,
-                Point.worldCenter.Y - scaleFactor * y, z * scaleFactor);
+            p = AffineTransformations.rotate(p, AxisType.Y, yawAngle);
+            p = AffineTransformations.rotate(p, AxisType.X, pitchAngle);
+            return new Point(Point.worldCenter.X + scaleFactor * p.Xf,
+                Point.worldCenter.Y - scaleFactor * p.Yf, p.Zf * scaleFactor);
         }
         
         public void changeViewAngles(double shiftX = 0, double shiftY = 0)
@@ -29,7 +32,7 @@ namespace AdvancedGraphics
 
         void floatingHorizon(Func<double, double, double> f)
         {
-            double step = threshold * 2.0 / 100;
+            double step = threshold * 2.0 / splitting;
 
             double[] upHorizon = new double[canvas.Width];
             double[] downHorizon = new double[canvas.Width];
@@ -45,10 +48,10 @@ namespace AdvancedGraphics
 
             for (double z = -threshold; z <= threshold; z += step)
             {
-                Point last = getScaledPoint(-threshold, f(-threshold, z),z);
+                Point last = getScaledPoint(new Point(-threshold, f(-threshold, z),z));
                 for (double x = -threshold; x <= threshold; x += step)
                 {
-                    Point curr = getScaledPoint(x, f(x, z),z);
+                    Point curr = getScaledPoint(new Point(x, f(x, z),z));
                     AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), curr.toSimple2D(), Color.Navy);
                     last = curr;
                 }

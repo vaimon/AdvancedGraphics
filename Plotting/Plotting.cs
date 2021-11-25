@@ -119,7 +119,7 @@ namespace AdvancedGraphics
                     break;
                 default: return;
             }
-
+            redraw();
             e.Handled = true;
         }
     }
