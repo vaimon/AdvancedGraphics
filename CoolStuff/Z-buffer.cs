@@ -264,20 +264,28 @@ namespace GraphicsHelper
         /// <param name="scene">Множество фигур на сцене</param>
         /// <param name="camera">Камера</param>
         /// <param name="colors">Список цветов</param>
-        public static Bitmap z_buf(int width, int height, List<Shape> scene, Camera camera, List<Color> colors)
+        public static Bitmap z_buf(int width, int height, List<Shape> scene, Camera camera, AdvancedGraphics.CoolStuff.LightSource light, List<Color> colors,bool mode)
         {
             //Bitmap bitmap = new Bitmap(width, height);
-            bool mode = false;
+            if (mode == true)
+            {
+                foreach (var shape in scene)
+                {
+
+                    Lighting.CalculateLambert(shape, shape.GetColor, light);
+                }
+            }
+            // bool mode = false;
             Bitmap canvas = new Bitmap(width, height);
             //new FastBitmap(bitmap);
             for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
+               for (int j = 0; j < height; j++)
+                    canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
             //z-буфер
             double[,] zbuffer = new double[width, height];
             for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                zbuffer[i, j] = double.MaxValue; //Изначально, буфер
+                for (int j = 0; j < height; j++)
+                    zbuffer[i, j] = double.MaxValue; //Изначально, буфер
             // инициализируется значением z = zmax
             List<List<List<Point>>> rasterscene = new List<List<List<Point>>>();
             for (int i = 0; i < scene.Count(); i++)
@@ -290,6 +298,7 @@ namespace GraphicsHelper
             int index = 0;
             for (int i = 0; i < rasterscene.Count(); i++)
             {
+                Color color1 = scene[i].GetColor;
                 for (int j = 0; j < rasterscene[i].Count(); j++)
                 {
                     List<Point> current = rasterscene[i][j]; //это типа грань но уже растеризованная
@@ -304,7 +313,14 @@ namespace GraphicsHelper
                             if (p.Zf < zbuffer[x, y])
                             {
                                 zbuffer[x, y] = p.Zf;
-                                canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
+                                if (mode == false)
+                                {
+                                    canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
+                                }
+                                else
+                                {
+                                    canvas.SetPixel(x, y, Color.FromArgb((int)(p.lightness * color1.R), (int)(p.lightness * color1.G), (int)(p.lightness * color1.B)));
+                                }
                             }
                         }
                     }

@@ -30,6 +30,7 @@ namespace AdvancedGraphics
         {
             sceneShapes = new BindingList<Shape>();
             colorrange = GenerateColors();
+            //colorrange = new List<Color> { Color.Red, Color.Blue, Color.Green };
             scene = new List<Shape>();
             InitializeComponent();
             listBox.DataSource = sceneShapes;
@@ -57,6 +58,7 @@ namespace AdvancedGraphics
             {
                 Shape s = Shape.readShape(openFileDialog1.FileName);
                 sceneShapes.Add(s);
+                s.SetColor(colorrange[sceneShapes.Count() - 1]);
                 scene.Add(s);
                 changeToolsAccessibility(true);
                 redrawScene();
@@ -181,7 +183,7 @@ namespace AdvancedGraphics
         private void z_buffer_Click(object sender, EventArgs e)
         {
             List<Shape> l = sceneShapes.ToList();
-            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, colorrange);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera,lightSource, colorrange,false);
             canvas.Image = bmp;
             canvas.Invalidate();
         }
@@ -212,8 +214,10 @@ namespace AdvancedGraphics
 
         private void buttonLighting_Click(object sender, EventArgs e)
         {
-            sceneShapes[0].SetColor(Color.Red);
-            Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height, sceneShapes[0], lightSource, sceneShapes[0].GetColor, camera);
+            //sceneShapes[0].SetColor(Color.Red);
+            List<Shape> l = sceneShapes.ToList();
+            //Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height,l, lightSource, sceneShapes[0].GetColor, camera);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, true);
             canvas.Image = bmp;
             canvas.Invalidate();
             //redrawScene();

@@ -32,6 +32,7 @@ namespace GraphicsHelper
         {
             return (lightness+1) /2;
         }
+        //вектор нормали к вершине считается как сумма векторов нормалей прилежащих к этой вершине граней, поделенная на количество этих граней
         public static Vector NormalVertex(List<Face> faces, Shape s)
         {
             Vector res=new Vector(0,0,0);
@@ -84,9 +85,14 @@ namespace GraphicsHelper
              //   CalculateLambert(s, s.GetColor, light);
             //}
         //}
-        public static Bitmap Method_Guro(int width, int height, Shape shape, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
+        public static Bitmap Method_Guro(int width, int height, List<Shape> scene, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
         {
-            CalculateLambert(shape, color,light);
+           foreach (var shape in scene)
+            {
+               
+                CalculateLambert(shape, shape.GetColor, light);
+            }  
+       
             bool mode = true;
             Bitmap canvas = new Bitmap(width, height);
             //new FastBitmap(bitmap);
@@ -100,32 +106,42 @@ namespace GraphicsHelper
                 for (int j = 0; j < height; j++)
                     zbuffer[i, j] = double.MaxValue; //Изначально, буфер
             // инициализируется значением z = zmax
-            List<List<Point>> rasterscene = new List<List<Point>>();
-                rasterscene=GraphicsHelper.Z_buffer.RasterFigure(shape, camera,mode); //растеризовали все фигуры
+           List< List<List<Point>>> rasterscene = new List<List<List<Point>>>();
+            for (int i = 0; i < scene.Count(); i++)
+            {
+                rasterscene.Add(GraphicsHelper.Z_buffer.RasterFigure(scene[i], camera, mode)); //растеризовали все фигуры
+            }
+            //rasterscene =GraphicsHelper.Z_buffer.RasterFigure(shape, camera,mode); //растеризовали все фигуры
             int withmiddle = width / 2;
             int heightmiddle = height / 2;
             //int index = 0;
             for (int i = 0; i < rasterscene.Count(); i++)
-            {               
-                    List<Point> current = rasterscene[i]; //это типа грань но уже растеризованная
+            {
+                Color color1 = scene[i].GetColor;
+                for (int j = 0; j < rasterscene[i].Count(); j++)
+                {
+                    List<Point> current = rasterscene[i][j]; //это типа грань но уже растеризованная
+
+                   // Color c1 = scene[j].GetColor;
                     foreach (Point p in current)
                     {
                         int x = (int)(p.X); //
 
                         int y = (int)(p.Y); // + heightmiddle 
-                        
+
                         if (x < width && y < height && y > 0 && x > 0)
                         {
                             if (p.Zf < zbuffer[x, y])
                             {
                                 zbuffer[x, y] = p.Zf;
-                                canvas.SetPixel(x, y, Color.FromArgb((int)(p.lightness*color.R), (int)(p.lightness * color.G), (int)(p.lightness * color.B))); //canvas.Height - 
+                                canvas.SetPixel(x, y, Color.FromArgb((int)(p.lightness * color1.R), (int)(p.lightness * color1.G), (int)(p.lightness * color1.B))); //canvas.Height - 
                             }
                         }
                     }
 
-                   //index++;
-                
+                    //index++;
+
+                }
             }
 
             return canvas;
