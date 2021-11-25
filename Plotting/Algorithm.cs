@@ -34,7 +34,7 @@ namespace AdvancedGraphics
         public void changeViewAngles(double shiftX = 0, double shiftY = 0)
         {
             pitchAngle = Math.Clamp(pitchAngle + shiftY, -89.0, 89.0);
-            yawAngle = (yawAngle + shiftX) % 360;
+            yawAngle = Math.Clamp(yawAngle + shiftX, -89.0, 89.0);
         }
 
         Color getColorByVisibility(Visibilty v)
@@ -52,6 +52,10 @@ namespace AdvancedGraphics
 
         void updateHorizons(FloatingPoint last, FloatingPoint curr)
         {
+            if (last.X < 0 || curr.X >= canvas.Width)
+            {
+                return;
+            }
             if (curr.X - last.X == 0)
             {
                 upHorizon[curr.X] = Math.Max(upHorizon[curr.X], curr.Yf);
@@ -69,32 +73,20 @@ namespace AdvancedGraphics
             }
         }
 
-        ReducedFloatingPoint intersect(FloatingPoint last, FloatingPoint curr, ref double[] horizon)
+        FloatingPoint intersect(FloatingPoint previous, FloatingPoint curr, Func<double, double, double> f)
         {
-            if (curr.X - last.X == 0)
+            var startingVisibility = previous.Visibility;
+            FloatingPoint mid = previous;
+            for (int x = previous.X; x <= curr.X; x++)
             {
-                return new ReducedFloatingPoint(last.X, (int) (Point.worldCenter.Y - horizon[last.X]));
+                mid = new FloatingPoint(x, f(x, previous.Zf), previous.Zf,ref upHorizon,ref downHorizon);
+                if (mid.Visibility != startingVisibility)
+                {
+                    break;
+                }
             }
 
-            var tg = (curr.Yf - last.Yf) / (curr.Xf - last.Xf);
-            var visibilityLeft = Math.Sign(last.Yf + tg - horizon[last.X + 1]);
-            var visibilityWork = visibilityLeft;
-            var y = last.Yf + tg;
-            var x = last.X + 1;
-            while (visibilityLeft == visibilityWork)
-            {
-                y += tg;
-                x += 1;
-                visibilityWork = Math.Sign(y - horizon[x]);
-            }
-
-            if (Math.Abs(y - tg - horizon[x - 1]) <= Math.Abs(y - horizon[x]))
-            {
-                y -= tg;
-                x -= 1;
-            }
-
-            return new ReducedFloatingPoint(x, (int) (Point.worldCenter.Y - y));
+            return mid;
         }
 
 
@@ -124,24 +116,33 @@ namespace AdvancedGraphics
 
                     if (current.Visibility == Visibilty.VISIBLE_UP)
                     {
-                        
-                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
-                                getColorByVisibility(Visibilty.VISIBLE_UP));
-                            //upHorizon[current.X] = current.Yf;
-                            updateHorizons(previous, current);
-
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                            getColorByVisibility(Visibilty.VISIBLE_UP));
+                        //upHorizon[current.X] = current.Yf;
+                        updateHorizons(previous, current);
                     }
                     else if (current.Visibility == Visibilty.VISIBLE_DOWN)
                     {
-
-                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
-                                getColorByVisibility(Visibilty.VISIBLE_DOWN));
-                            //downHorizon[current.X] = current.Yf;
-                            updateHorizons(previous, current);
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                            getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                        //downHorizon[current.X] = current.Yf;
+                        updateHorizons(previous, current);
                     }
                     else
                     {
-                        
+                        // if (previous.Visibility == Visibilty.VISIBLE_UP)
+                        // {
+                        //     var mid = intersect(previous, current, f);
+                        //     AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
+                        //         getColorByVisibility(Visibilty.VISIBLE_UP));
+                        //     updateHorizons(previous,mid);
+                        // } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
+                        // {
+                        //     var mid = intersect(previous, current, f);
+                        //     AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
+                        //         getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                        //     updateHorizons(previous,mid);
+                        // }
                     }
 
                     previous = current;
