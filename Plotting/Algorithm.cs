@@ -9,11 +9,9 @@ namespace AdvancedGraphics
 {
     public partial class FormPlotting
     {
-        
-
         private const int scaleFactor = 100;
         private const double threshold = 5;
-        private const double splitting = 50;
+        private const double splitting = 100;
         private double yawAngle;
         private double pitchAngle;
         private double[] upHorizon;
@@ -22,11 +20,17 @@ namespace AdvancedGraphics
         FloatingPoint getScaledPoint(Point p)
         {
             var res = AffineTransformations.rotate(p, AxisType.Y, yawAngle);
-            res = AffineTransformations.rotate(p, AxisType.X, pitchAngle);
-            return new FloatingPoint(Point.worldCenter.X + scaleFactor * res.Xf,
+            res = AffineTransformations.rotate(res, AxisType.X, pitchAngle);
+            var x = Point.worldCenter.X + scaleFactor * res.Xf;
+            if (x < 0 || x >= canvas.Width)
+            {
+                return new FloatingPoint(x, scaleFactor * res.Yf, res.Zf * scaleFactor, Visibilty.INVISIBLE);
+            }
+
+            return new FloatingPoint(x,
                 scaleFactor * res.Yf, res.Zf * scaleFactor, ref upHorizon, ref downHorizon);
         }
-        
+
         public void changeViewAngles(double shiftX = 0, double shiftY = 0)
         {
             pitchAngle = Math.Clamp(pitchAngle + shiftY, -89.0, 89.0);
@@ -35,7 +39,6 @@ namespace AdvancedGraphics
 
         Color getColorByVisibility(Visibilty v)
         {
-            return Color.Navy;
             switch (v)
             {
                 case Visibilty.VISIBLE_UP:
@@ -90,7 +93,8 @@ namespace AdvancedGraphics
                 y -= tg;
                 x -= 1;
             }
-            return new ReducedFloatingPoint(x, (int)(Point.worldCenter.Y - y));
+
+            return new ReducedFloatingPoint(x, (int) (Point.worldCenter.Y - y));
         }
 
 
@@ -113,81 +117,34 @@ namespace AdvancedGraphics
 
             for (double z = threshold; z >= -threshold; z -= step)
             {
-                FloatingPoint last = getScaledPoint(new Point(-threshold, f(-threshold, z), z));
+                FloatingPoint previous = getScaledPoint(new Point(-threshold, f(-threshold, z), z));
                 for (double x = -threshold; x <= threshold; x += step)
                 {
-                    FloatingPoint curr =
-                        getScaledPoint(new Point(x, f(x, z), z));
-                    if (curr.X < 0 || curr.X >= canvas.Width)
-                    {
-                        continue;
-                    }
+                    FloatingPoint current = getScaledPoint(new Point(x, f(x, z), z));
 
-                    if (last.Visibility == curr.Visibility && curr.Visibility != Visibilty.INVISIBLE)
+                    if (current.Visibility == Visibilty.VISIBLE_UP)
                     {
-                        AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), curr.toSimple2D(), getColorByVisibility(curr.Visibility));
-                        updateHorizons(last,curr);
+                        
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_UP));
+                            //upHorizon[current.X] = current.Yf;
+                            updateHorizons(previous, current);
+
+                    }
+                    else if (current.Visibility == Visibilty.VISIBLE_DOWN)
+                    {
+
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            //downHorizon[current.X] = current.Yf;
+                            updateHorizons(previous, current);
                     }
                     else
                     {
-                        ReducedFloatingPoint interPoint;
-                        if (curr.Visibility == Visibilty.INVISIBLE)
-                        {
-                            if (last.Visibility == Visibilty.VISIBLE_UP)
-                            {
-                                interPoint = intersect(last, curr, ref upHorizon);
-                            }
-                            else
-                            {
-                                interPoint = intersect(last, curr, ref downHorizon);
-                            }
-                            AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), curr.toSimple2D(), getColorByVisibility(interPoint.Visibility)); // inter => curr
-                            updateHorizons(last,interPoint);
-                        }
-                        else
-                        {
-                            if (curr.Visibility == Visibilty.VISIBLE_UP)
-                            {
-                                if (last.Visibility == Visibilty.INVISIBLE)
-                                {
-                                    interPoint = intersect(last, curr, ref upHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, interPoint.toSimple2D(), curr.toSimple2D(), getColorByVisibility(interPoint.Visibility));
-                                    updateHorizons(interPoint,curr);
-                                }
-                                else
-                                {
-                                    interPoint = intersect(last, curr, ref downHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), interPoint.toSimple2D(), getColorByVisibility(interPoint.Visibility));
-                                    updateHorizons(last,interPoint);
-                                    
-                                    interPoint = intersect(last, curr, ref upHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, interPoint.toSimple2D(), last.toSimple2D(), getColorByVisibility(interPoint.Visibility)); // curr => last
-                                    updateHorizons(interPoint,curr);
-                                }
-                            }
-                            else
-                            {
-                                if (last.Visibility == Visibilty.INVISIBLE)
-                                {
-                                    interPoint = intersect(last, curr, ref upHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, interPoint.toSimple2D(), curr.toSimple2D(), getColorByVisibility(interPoint.Visibility));
-                                    updateHorizons(interPoint,curr);
-                                }
-                                else
-                                {
-                                    interPoint = intersect(last, curr, ref upHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), interPoint.toSimple2D(), getColorByVisibility(interPoint.Visibility));
-                                    updateHorizons(last,interPoint);
-                                    
-                                    interPoint = intersect(last, curr, ref downHorizon);
-                                    AdditionalAlgorithms.drawVuLine(ref fbitmap, interPoint.toSimple2D(), curr.toSimple2D(), getColorByVisibility(interPoint.Visibility));
-                                    updateHorizons(interPoint,curr);
-                                }
-                            }
-                        }
                         
                     }
-                    last = curr;
+
+                    previous = current;
                 }
             }
 
