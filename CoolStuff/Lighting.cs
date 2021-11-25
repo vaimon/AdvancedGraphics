@@ -14,6 +14,12 @@ namespace GraphicsHelper
         //Вычислить цвет в каждой вершине по модели Ламберта (рассеянную часть).
         //Закрасить грань, интерполируя цвет между цветами вершин(билинейная интерполяция).
         //Добавить возможность применения аффинных преобразований к объекту.
+        /// <summary>
+        /// Получить значение освещенности в вершине
+        /// </summary>
+        /// <param name="v">Вершина</param>
+        /// <param name="light">Источник освещения</param>
+        
         public static  double GetLightness(Vertex v, AdvancedGraphics.CoolStuff.LightSource light)
         {
             var normv = v.normVector;
@@ -27,12 +33,23 @@ namespace GraphicsHelper
         }
         //Имеется также простая зависимость между силой света, излучаемого плоской рассеивающей площадкой {\displaystyle dS}dS в каком-либо направлении, от угла {\displaystyle \alpha }\alpha  между этим направлением и перпендикуляром к {\displaystyle dS}dS:
         //Ia=I0*cosa
+        /// <summary>
+        /// Алгоритм 
+        /// </summary>
+        /// <param name="lightness">Освещение</param>
+        /// <param name="c"></param>
 
-        public static double GetIntense(double lightness, Color c)
+        public static double GetIntense(double lightness)
         {
             return (lightness+1) /2;
         }
         //вектор нормали к вершине считается как сумма векторов нормалей прилежащих к этой вершине граней, поделенная на количество этих граней
+        /// <summary>
+        /// Считает вектор нормали к вершине
+        /// </summary>
+        /// <param name="faces">Список граней, которым принадлежит эта вершина</param>
+        /// <param name="s">Фигура</param>
+       
         public static Vector NormalVertex(List<Face> faces, Shape s)
         {
             Vector res=new Vector(0,0,0);
@@ -47,7 +64,13 @@ namespace GraphicsHelper
             res.Zf = res.Zf / faces.Count();
             return res;
         }
-        public static void CalculateLambert(Shape s, Color c,AdvancedGraphics.CoolStuff.LightSource light)
+        /// <summary>
+        /// Для каждой вершины считает освещенность по методу Ламберта, пересчитывает нормали(что-то у нас с obj нормалями не то)
+        /// </summary>
+        /// <param name="s">Фигура</param>
+        /// <param name="light">Источник освещения</param>
+      
+        public static void CalculateLambert(Shape s,AdvancedGraphics.CoolStuff.LightSource light)
         {
             Dictionary<Vertex, Vector> normales = new Dictionary<Vertex, Vector>();
             for (int i = 0; i < s.Faces.Count; i++)
@@ -71,26 +94,35 @@ namespace GraphicsHelper
                 foreach (var vert in f.Vertices)
                 {
                     double lamb = GetLightness(vert, light);
-                    double intense = GetIntense(lamb, c);
+                    double intense = GetIntense(lamb);
                     vert.lightness = intense;
                 }
             }
         }
         //public static void CalculateLambertFigure(Shape s, AdvancedGraphics.CoolStuff.LightSource light)
         //{
-            //считаем для каждой грани
-           // foreach (var face in s.Faces)
-           // {
-                //для каждой вершины грани
-             //   CalculateLambert(s, s.GetColor, light);
-            //}
+        //считаем для каждой грани
+        // foreach (var face in s.Faces)
+        // {
+        //для каждой вершины грани
+        //   CalculateLambert(s, s.GetColor, light);
         //}
+        //}
+        /// <summary>
+        /// Алгоритм освещения по Гуро(цвет считается в вершинах и интерполируется)
+        /// </summary>
+        /// <param name="width">Ширина канваса</param>
+        /// <param name="height">Высота канваса</param>
+        /// <param name="scene">Множество фигур на сцене</param>
+        /// <param name="light">Источник освещения</param>
+        /// <param name="color">Цвет</param>
+        /// <param name="camera">Камера</param>
         public static Bitmap Method_Guro(int width, int height, List<Shape> scene, AdvancedGraphics.CoolStuff.LightSource light, Color color,Camera camera)
         {
            foreach (var shape in scene)
             {
                
-                CalculateLambert(shape, shape.GetColor, light);
+                CalculateLambert(shape, light);
             }  
        
             bool mode = true;

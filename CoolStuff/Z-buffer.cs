@@ -272,7 +272,7 @@ namespace GraphicsHelper
                 foreach (var shape in scene)
                 {
 
-                    Lighting.CalculateLambert(shape, shape.GetColor, light);
+                    Lighting.CalculateLambert(shape, light);
                 }
             }
             // bool mode = false;
