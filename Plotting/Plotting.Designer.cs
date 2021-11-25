@@ -38,9 +38,9 @@ namespace AdvancedGraphics
             this.canvas = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rbTriangles = new System.Windows.Forms.RadioButton();
-            this.rbLines = new System.Windows.Forms.RadioButton();
             this.rbNet = new System.Windows.Forms.RadioButton();
+            this.rbLines = new System.Windows.Forms.RadioButton();
+            this.rbTriangles = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -149,6 +149,28 @@ namespace AdvancedGraphics
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Настройки";
             // 
+            // rbNet
+            // 
+            this.rbNet.AutoSize = true;
+            this.rbNet.Location = new System.Drawing.Point(23, 109);
+            this.rbNet.Name = "rbNet";
+            this.rbNet.Size = new System.Drawing.Size(209, 29);
+            this.rbNet.TabIndex = 0;
+            this.rbNet.Text = "Отображение сеткой";
+            this.rbNet.UseVisualStyleBackColor = true;
+            this.rbNet.CheckedChanged += new System.EventHandler(this.rbNet_CheckedChanged);
+            // 
+            // rbLines
+            // 
+            this.rbLines.AutoSize = true;
+            this.rbLines.Location = new System.Drawing.Point(23, 74);
+            this.rbLines.Name = "rbLines";
+            this.rbLines.Size = new System.Drawing.Size(226, 29);
+            this.rbLines.TabIndex = 0;
+            this.rbLines.Text = "Отображение линиями";
+            this.rbLines.UseVisualStyleBackColor = true;
+            this.rbLines.CheckedChanged += new System.EventHandler(this.rbLines_CheckedChanged);
+            // 
             // rbTriangles
             // 
             this.rbTriangles.AutoSize = true;
@@ -162,28 +184,6 @@ namespace AdvancedGraphics
             this.rbTriangles.UseVisualStyleBackColor = true;
             this.rbTriangles.CheckedChanged += new System.EventHandler(this.rbTriangles_CheckedChanged);
             // 
-            // rbLines
-            // 
-            this.rbLines.AutoSize = true;
-            this.rbLines.Location = new System.Drawing.Point(23, 74);
-            this.rbLines.Name = "rbLines";
-            this.rbLines.Size = new System.Drawing.Size(226, 29);
-            this.rbLines.TabIndex = 0;
-            this.rbLines.Text = "Отображение линиями";
-            this.rbLines.UseVisualStyleBackColor = true;
-            this.rbLines.CheckedChanged += new System.EventHandler(this.rbLines_CheckedChanged);
-            // 
-            // rbNet
-            // 
-            this.rbNet.AutoSize = true;
-            this.rbNet.Location = new System.Drawing.Point(23, 109);
-            this.rbNet.Name = "rbNet";
-            this.rbNet.Size = new System.Drawing.Size(209, 29);
-            this.rbNet.TabIndex = 0;
-            this.rbNet.Text = "Отображение сеткой";
-            this.rbNet.UseVisualStyleBackColor = true;
-            this.rbNet.CheckedChanged += new System.EventHandler(this.rbNet_CheckedChanged);
-            // 
             // FormPlotting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -193,10 +193,12 @@ namespace AdvancedGraphics
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.canvas);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "FormPlotting";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Метод плавающего горизонта";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormPlotting_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();

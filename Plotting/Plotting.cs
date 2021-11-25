@@ -22,7 +22,6 @@ namespace AdvancedGraphics
         {
             InitializeComponent();
             displayType = DisplayType.TRIANGLES;
-            camera = new Camera();
         }
 
         void setPBStyles(int selectedPBIndex)
@@ -100,6 +99,28 @@ namespace AdvancedGraphics
             {
                 displayType = DisplayType.NET;
             }
+        }
+
+        private void FormPlotting_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            switch (e.KeyChar)
+            {
+                case 'w':
+                    changeViewAngles(shiftY: 2);
+                    break;
+                case 'a':
+                    changeViewAngles(shiftX: -2);
+                    break;
+                case 's':
+                    changeViewAngles(shiftY: -2);
+                    break;
+                case 'd':
+                    changeViewAngles(shiftX: 2);
+                    break;
+                default: return;
+            }
+
+            e.Handled = true;
         }
     }
 }

@@ -9,43 +9,52 @@ namespace AdvancedGraphics
 {
     public partial class FormPlotting
     {
-        private Camera camera;
+        private const int scaleFactor = 100;
+        private const double threshold = 5;
+        private double yawAngle;
+        private double pitchAngle;
 
-        System.Drawing.Point toDumbPoint(Point p)
+        static Point getScaledPoint(double x, double y, double z)
         {
-            return new System.Drawing.Point((int) (Point.worldCenter.X + p.Xf * 100),
-                (int) (Point.worldCenter.Y + p.Zf * 100));
+            return new Point(Point.worldCenter.X + scaleFactor * x,
+                Point.worldCenter.Y - scaleFactor * y, z * scaleFactor);
+        }
+        
+        public void changeViewAngles(double shiftX = 0, double shiftY = 0)
+        {
+            pitchAngle = Math.Clamp(pitchAngle + shiftY, -89.0, 89.0);
+            yawAngle = (yawAngle + shiftX) % 360;
         }
 
-        void floatingHorizon(Func<double, double, double> f, double threshold = 5, int splitting = 20)
+
+        void floatingHorizon(Func<double, double, double> f)
         {
-            double step = threshold * 2.0 / splitting;
+            double step = threshold * 2.0 / 100;
 
-            double[] upHorizon = new double[splitting + 1];
-            double[] downHorizon = new double[splitting + 1];
+            double[] upHorizon = new double[canvas.Width];
+            double[] downHorizon = new double[canvas.Width];
 
-            for (int i = 0; i < splitting + 1; i++)
+            for (int i = 0; i < canvas.Width; i++)
             {
                 upHorizon[i] = double.MinValue;
                 downHorizon[i] = double.MaxValue;
             }
 
-            List<Point> surface = new List<Point>();
-            for (double x = -threshold; x <= threshold; x += step)
+            var bitmap = new Bitmap(canvas.Width, canvas.Height);
+            var fbitmap = new FastBitmap.FastBitmap(bitmap);
+
+            for (double z = -threshold; z <= threshold; z += step)
             {
-                for (double y = -threshold; y <= threshold; y += step)
+                Point last = getScaledPoint(-threshold, f(-threshold, z),z);
+                for (double x = -threshold; x <= threshold; x += step)
                 {
-                    surface.Add(new Point(x,y,f(x,y)));
+                    Point curr = getScaledPoint(x, f(x, z),z);
+                    AdditionalAlgorithms.drawVuLine(ref fbitmap, last.toSimple2D(), curr.toSimple2D(), Color.Navy);
+                    last = curr;
                 }
             }
-
             
-            var bitmap = new Bitmap(canvas.Width, canvas.Height);
-            using (var fbitmap = new FastBitmap.FastBitmap(bitmap))
-            {
-                
-            }
-            
+            fbitmap.Dispose();
             canvas.Image = bitmap;
         }
 
