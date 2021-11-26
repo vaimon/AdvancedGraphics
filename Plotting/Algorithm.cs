@@ -105,6 +105,23 @@ namespace AdvancedGraphics
 
             return curr;
         }
+        
+        FloatingPoint antiIntersect(FloatingPoint previous, FloatingPoint curr)
+        {
+            double xStep = (curr.Xf - previous.Xf * 1.0) / 20;
+            double yStep = (curr.Yf - previous.Yf * 1.0) / 20;
+            for (int i = 1; i <= 20; i++)
+            {
+                var point = new FloatingPoint(Math.Clamp(previous.Xf + i * xStep, 0,canvas.Width - 1), previous.Yf + i * yStep, curr.Zf, ref upHorizon,
+                    ref downHorizon);
+                if (point.Visibility != Visibilty.INVISIBLE)
+                {
+                    return point;
+                }
+            }
+
+            return curr;
+        }
 
 
         // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
@@ -176,15 +193,15 @@ namespace AdvancedGraphics
                         if (previous.Visibility == Visibilty.VISIBLE_UP)
                         {
                             //var mid = intersect(z,x-step,x, f,upHorizon);
-                            var mid = intersect(previous, current);
-                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),Color.Green);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
                             updateHorizons(previous,mid);
                         } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
                         {
                             //var mid = intersect(z,x-step,x, f,downHorizon);
-                            var mid = intersect(previous, current);
-                            AdditionalAlgorithms.drawVuLine(ref fbitmap, mid.toSimple2D(), current.toSimple2D(),Color.Red);
-                            updateHorizons(mid,current);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(previous,mid);
                         }
 
                         // if (previous.Visibility != Visibilty.INVISIBLE)
