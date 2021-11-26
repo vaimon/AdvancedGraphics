@@ -15,6 +15,7 @@ namespace AdvancedGraphics
     {
         bool isAxisVisible = false;
         Pen blackPen = new Pen(Color.Black, 3);
+        Pen greenPen = new Pen(Color.DarkSeaGreen, 3);
         Pen highlightPen = new Pen(Color.DarkRed, 3);
         FastBitmap fbitmap;
         List<Color> rangecolors;
@@ -113,7 +114,11 @@ namespace AdvancedGraphics
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50), new Pen(Color.DarkOrange));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50), new Pen(Color.Violet));
             List<Point> lig= Z_buffer.ProjectionToPlane(new List<Point> { lightSource.Position },camera);
-            DrawPoint(lig[0]);
+            drawLine(lightSource.Position, new Point(lightSource.Position.X+10, lightSource.Position.Y+10, lightSource.Position.Z),greenPen);
+            drawLine( new Point(lightSource.Position.X + 10, lightSource.Position.Y, lightSource.Position.Z), new Point(lightSource.Position.X, lightSource.Position.Y+10, lightSource.Position.Z), greenPen);
+            // Point lig1 = camera.toCameraView(lightSource.Position);
+            // DrawPoint(lig[0]);
+            //DrawPoint(lig1);
 
             fbitmap.Dispose();
             String text = "x:";
