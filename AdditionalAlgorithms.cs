@@ -1,12 +1,10 @@
 ﻿using GraphicsHelper;
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Point = GraphicsHelper.Point;
 
 namespace AdvancedGraphics
@@ -15,12 +13,12 @@ namespace AdvancedGraphics
     {
         public static byte bytify(double color)
         {
-            return (byte)Math.Round(255 * color);
+            return (byte) Math.Round(255 * color);
         }
 
         private static float frac(double f)
         {
-            return (float)(f - Math.Truncate(f));
+            return (float) (f - Math.Truncate(f));
         }
 
         /// <summary>
@@ -28,7 +26,8 @@ namespace AdvancedGraphics
         /// </summary>
         /// <param name="p0"></param>
         /// <param name="p1"></param>
-        public static void drawVuLine(ref FastBitmap.FastBitmap fbitmap, System.Drawing.Point p0, System.Drawing.Point p1, Color color)
+        public static void drawVuLine(ref FastBitmap.FastBitmap fbitmap, System.Drawing.Point p0,
+            System.Drawing.Point p1, Color color)
         {
             float x0 = p0.X, x1 = p1.X, y0 = p0.Y, y1 = p1.Y;
             bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
@@ -127,6 +126,30 @@ namespace AdvancedGraphics
                     intery += gradient;
                 }
             }
+        }
+
+        public static void drawVuLineWithColorStop(ref FastBitmap.FastBitmap fbitmap, System.Drawing.Point p0,
+            System.Drawing.Point p1, Color color)
+        {
+            System.Drawing.Point mid = p0;
+            double xStep = (p1.X - p0.X * 1.0) / 20;
+            double yStep = (p1.Y - p0.Y * 1.0) / 20;
+            for (int i = 1; i <= 20; i++)
+            {
+                var point = new System.Drawing.Point((int) Math.Round(p0.X + xStep * i),
+                    (int) Math.Round(p0.Y + yStep * i));
+                if (point.X == p0.X)
+                {
+                    continue;
+                }
+                
+                if (fbitmap.GetPixel(point).ToArgb() != 0)
+                {
+                    mid = point;
+                    break;
+                }
+            }
+            drawVuLine(ref fbitmap,p0,mid,color);
         }
     }
 }

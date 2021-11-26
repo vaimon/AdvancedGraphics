@@ -154,7 +154,7 @@ namespace GraphicsHelper
 
         public System.Drawing.Point toSimple2D()
         {
-            return new System.Drawing.Point(X, (int) (worldCenter.Y - Yf));
+            return new System.Drawing.Point(Math.Clamp(X,0,screenSize.Width - 1), Math.Clamp((int) (worldCenter.Y - Yf),0,screenSize.Height -1));
         }
 
         public Tuple<PointF?, double> to2D(Camera cam)
