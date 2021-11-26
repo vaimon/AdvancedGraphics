@@ -11,7 +11,7 @@ namespace AdvancedGraphics
     {
         private const int scaleFactor = 100;
         private const double threshold = 5;
-        private const double splitting = 100;
+        private const double splitting = 75;
         private double yawAngle;
         private double pitchAngle;
         private double[] upHorizon;
@@ -237,7 +237,7 @@ namespace AdvancedGraphics
                     else
                     {
                         var mid = intersect(current, previous);
-                        AdditionalAlgorithms.drawVuLine(ref fbitmap, mid.toSimple2D(), current.toSimple2D(),
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),
                             color);
                     }
                 }
@@ -252,6 +252,8 @@ namespace AdvancedGraphics
                 }
             }
         }
+        
+        
         
         // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
         void floatingHorizonByNet(Func<double, double, double> f)
@@ -360,6 +362,65 @@ namespace AdvancedGraphics
             canvas.Image = bitmap;
         }
         
+        void drawTriangles(ref FastBitmap.FastBitmap fbitmap, int xNumber, FloatingPoint current, Color color)
+        {
+            if (prevLine.Count != 0)
+            {
+                var previous = prevLine[xNumber];
+                if (current.Visibility != Visibilty.INVISIBLE)
+                {
+                    if (previous.Visibility != Visibilty.INVISIBLE)
+                    {
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                            color);
+                    }
+                    else
+                    {
+                        var mid = intersect(current, previous);
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),
+                            color);
+                    }
+                }
+                else
+                {
+                    if (previous.Visibility != Visibilty.INVISIBLE)
+                    {
+                        var mid = antiIntersect(current, previous);
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
+                            color);
+                    }
+                }
+                
+                if (xNumber != 0)
+                {
+                    var previousLeft = prevLine[xNumber - 1];
+                    if (current.Visibility != Visibilty.INVISIBLE)
+                    {
+                        if (previousLeft.Visibility != Visibilty.INVISIBLE)
+                        {
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previousLeft.toSimple2D(), current.toSimple2D(),
+                                color);
+                        }
+                        else
+                        {
+                            var mid = intersect(current, previousLeft);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),
+                                color);
+                        }
+                    }
+                    else
+                    {
+                        if (previousLeft.Visibility != Visibilty.INVISIBLE)
+                        {
+                            var mid = antiIntersect(current, previousLeft);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previousLeft.toSimple2D(), mid.toSimple2D(),
+                                color);
+                        }
+                    }
+                }
+            }
+        }
+        
         // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
         void floatingHorizonByTriangles(Func<double, double, double> f)
         {
@@ -377,13 +438,16 @@ namespace AdvancedGraphics
             var bitmap = new Bitmap(canvas.Width, canvas.Height);
             var fbitmap = new FastBitmap.FastBitmap(bitmap);
 
+            prevLine = new List<FloatingPoint>();
             for (double z = threshold; z >= -threshold; z -= step)
             {
+                List<FloatingPoint> currLine = new List<FloatingPoint>();
                 FloatingPoint previous = getScaledPoint(new Point(-threshold, f(-threshold, z), z));
+                
                 for (double x = -threshold; x <= threshold; x += step)
                 {
                     FloatingPoint current = getScaledPoint(new Point(x, f(x, z), z));
-
+                    currLine.Add(current);
                     if (current.Visibility == Visibilty.VISIBLE_UP)
                     {
                         if (previous.Visibility != Visibilty.INVISIBLE)
@@ -391,6 +455,7 @@ namespace AdvancedGraphics
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
                                 getColorByVisibility(Visibilty.VISIBLE_UP));
                             //upHorizon[current.X] = current.Yf;
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
                             updateHorizons(previous, current);
                         }else
                         {
@@ -400,6 +465,7 @@ namespace AdvancedGraphics
 
                             var mid = intersect(current, previous);
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
                             updateHorizons(current,mid);
                         }
                         
@@ -410,6 +476,7 @@ namespace AdvancedGraphics
                         {
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
                                 getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
                             //downHorizon[current.X] = current.Yf;
                             updateHorizons(previous, current);
                         }
@@ -420,6 +487,7 @@ namespace AdvancedGraphics
                             // updateHorizons(previous, current);
                             var mid = intersect(current, previous);
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
                             updateHorizons(current,mid);
                         }
                         
@@ -431,12 +499,14 @@ namespace AdvancedGraphics
                             //var mid = intersect(z,x-step,x, f,upHorizon);
                             var mid = antiIntersect(current, previous);
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
                             updateHorizons(previous,mid);
                         } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
                         {
                             //var mid = intersect(z,x-step,x, f,downHorizon);
                             var mid = antiIntersect(current, previous);
                             AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawTriangles(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
                             updateHorizons(previous,mid);
                         }
 
@@ -450,12 +520,14 @@ namespace AdvancedGraphics
 
                     previous = current;
                 }
+
+                prevLine = currLine;
             }
 
             fbitmap.Dispose();
             canvas.Image = bitmap;
         }
-
+        
         void redraw()
         {
             switch (displayType)
