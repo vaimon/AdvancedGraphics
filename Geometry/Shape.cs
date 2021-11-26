@@ -53,6 +53,14 @@ namespace GraphicsHelper
         {
             get => faces;
         }
+        public Color GetColor
+        {
+            get => shapeColor;
+        }
+        public void SetColor(Color c)
+        {
+            this.shapeColor=c;
+        }
 
 
         /// <summary>

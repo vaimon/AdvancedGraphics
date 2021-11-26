@@ -91,5 +91,15 @@ namespace GraphicsHelper
         {
             return new Vector(k * b.x, k * b.y, k * b.z);
         }
+        public static double GetCos(Vector v1, Vector v2)
+        {
+            double scalar = v1.Xf * v2.Xf + v1.Yf * v2.Yf + v1.Zf * v2.Zf;
+            double lengthv1 = Math.Sqrt(v1.Xf * v1.Xf + v1.Yf * v1.Yf + v1.Zf * v1.Zf);
+            double lengthv2 = Math.Sqrt(v2.Xf * v2.Xf + v2.Yf * v2.Yf + v2.Zf * v2.Zf);
+            double res = scalar / lengthv1 / lengthv2;
+            return res;
+
+        }
     }
+    
 }

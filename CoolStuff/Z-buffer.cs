@@ -37,20 +37,47 @@ namespace GraphicsHelper
 
             return res;
         }
+        //https://habr.com/ru/post/342708/
+        //интерполяция освещенности
+        /// <summary>
+        /// https://habr.com/ru/post/342708/
+        /// </summary>
+        /// <param name="x1">Стартовая точка</param>
+        /// <param name="i1">Стартовая точка</param>
+        /// <param name="x2">Конечная точка</param>
+        /// <param name="i2">Конечная точка</param>
+        public static List<double> interpolate_intense(int x1, double i1, int x2, double i2)
+        {
+            List<double> res = new List<double>();
+            if (x1 == x2)
+            {
+                res.Add(i1);
+            }
+
+            double step = (i2 - i1) / (x2 - x1); //с таким шагом будем получать новые значения
+            double y = i1;
+            for (int i = x1; i <= x2; i++)
+            {
+                res.Add(y);
+                y += step;
+            }
+
+            return res;
+        }
 
         //растеризация треугольника
         /// <summary>
         /// Растеризация треугольника
         /// </summary>
         /// <param name="points">Список вершин треугольника</param>
-        public static List<Point> Raster(List<Point> points)
+        public static List<Point> Raster(List<Point> points,bool mode)
         {
             List<Point> res = new List<Point>();
             //отсортировать точки по неубыванию ординаты
             points.Sort((p1, p2) => p1.Y.CompareTo(p2.Y));
             // "рабочие точки"
             // изначально они находятся в верхней точке
-            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z)).ToList();
+            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z,intense: p.light)).ToList();
             var xy01 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[1].y, wpoints[1].x);
             var xy12 = interpolate(wpoints[1].y, wpoints[1].x, wpoints[2].y, wpoints[2].x);
             var xy02 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[2].y, wpoints[2].x);
@@ -64,7 +91,10 @@ namespace GraphicsHelper
             //когда растеризуем, треугольник делим надвое
             //ищем координаты, чтобы разделить треугольник на 2
             int center = xy.Count() / 2;
-            List<int> lx, rx, lz, rz; //для приращений
+            List<int> lx, rx, lz, rz; //для приращений по координатам
+            List<double> leftintense, rightintense;//для приращений по интенсивности цвета
+            leftintense = new List<double>();
+            rightintense = new List<double>();
             if (xy02[center] < xy[center])
             {
                 lx = xy02;
@@ -80,6 +110,30 @@ namespace GraphicsHelper
                 rz = yz02;
             }
 
+            if (mode)
+            {
+                var lighting01 = interpolate_intense(wpoints[0].y, wpoints[0].intense, wpoints[1].y, wpoints[1].intense);
+                var lighting12 = interpolate_intense(wpoints[1].y, wpoints[1].intense, wpoints[2].y, wpoints[2].intense);
+                var lighting02 = interpolate_intense(wpoints[0].y, wpoints[0].intense, wpoints[2].y, wpoints[2].intense);
+                lighting01.RemoveAt(lighting01.Count() - 1); //убрать точку, чтобы не было повтора
+                var lighting = lighting01.Concat(lighting12).ToList();
+                if (xy02[center] < xy[center])
+                {
+                    leftintense = lighting02;
+                    rightintense = lighting;
+                   
+                }
+                else
+                {
+                    leftintense = lighting;
+                    rightintense = lighting02;
+                }
+
+                //когда растеризуем, треугольник делим надвое
+                //ищем координаты, чтобы разделить треугольник на 2
+
+            }
+          
             int y0 = wpoints[0].y;
             int y2 = wpoints[2].y;
             for (int i = 0; i <= y2 - y0; i++)
@@ -87,9 +141,20 @@ namespace GraphicsHelper
                 int leftx = lx[i];
                 int rightx = rx[i];
                 List<int> zcurr = interpolate(leftx, lz[i], rightx, rz[i]);
-                for (int j = leftx; j < rightx; j++)
+                if (mode)
                 {
-                    res.Add(new Point(j, y0 + i, zcurr[j - leftx]));
+                    List<double> intense_current = interpolate_intense(leftx, leftintense[i], rightx, rightintense[i]);
+                    for (int j = leftx; j < rightx; j++)
+                    {
+                        res.Add(new Point(j, y0 + i, zcurr[j - leftx], intense_current[j - leftx]));
+                    }
+                }
+                else
+                {
+                    for (int j = leftx; j < rightx; j++)
+                    {
+                        res.Add(new Point(j, y0 + i, zcurr[j - leftx]));
+                    }
                 }
             }
 
@@ -124,7 +189,7 @@ namespace GraphicsHelper
         /// </summary>
         /// <param name="figure">Фигура</param>
         /// <param name="camera">Камера</param>
-        public static List<List<Point>> RasterFigure(Shape figure, Camera camera)
+        public static List<List<Point>> RasterFigure(Shape figure, Camera camera,bool mode)
         {
             List<List<Point>> res = new List<List<Point>>();
             foreach (var polygon in figure.Faces) //каждая грань-это многоугольник, который надо растеризовать
@@ -140,7 +205,7 @@ namespace GraphicsHelper
                 List<List<Point>> triangles = Triangulate(points); //разбили все грани на треугольники
                 foreach (var triangle in triangles)
                 {
-                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera))); //projection(triangle)
+                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera),mode)); //projection(triangle)
                     //currentface.AddRange(Raster(triangle));
                 }
 
@@ -168,7 +233,7 @@ namespace GraphicsHelper
                     // Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y,current.Item2);
                     //var current = transformPoint(p, matrix);
                     var tocamv = camera.toCameraView(p);
-                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf);
+                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf,p.lightness);
                     res.Add(newpoint);
                 }
             }
@@ -199,24 +264,33 @@ namespace GraphicsHelper
         /// <param name="scene">Множество фигур на сцене</param>
         /// <param name="camera">Камера</param>
         /// <param name="colors">Список цветов</param>
-        public static Bitmap z_buf(int width, int height, List<Shape> scene, Camera camera, List<Color> colors)
+        public static Bitmap z_buf(int width, int height, List<Shape> scene, Camera camera, AdvancedGraphics.CoolStuff.LightSource light, List<Color> colors,bool mode)
         {
             //Bitmap bitmap = new Bitmap(width, height);
+            if (mode == true)
+            {
+                foreach (var shape in scene)
+                {
+
+                    Lighting.CalculateLambert(shape, light);
+                }
+            }
+            // bool mode = false;
             Bitmap canvas = new Bitmap(width, height);
             //new FastBitmap(bitmap);
             for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
+               for (int j = 0; j < height; j++)
+                    canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
             //z-буфер
             double[,] zbuffer = new double[width, height];
             for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                zbuffer[i, j] = double.MaxValue; //Изначально, буфер
+                for (int j = 0; j < height; j++)
+                    zbuffer[i, j] = double.MaxValue; //Изначально, буфер
             // инициализируется значением z = zmax
             List<List<List<Point>>> rasterscene = new List<List<List<Point>>>();
             for (int i = 0; i < scene.Count(); i++)
             {
-                rasterscene.Add(RasterFigure(scene[i], camera)); //растеризовали все фигуры
+                rasterscene.Add(RasterFigure(scene[i], camera,mode)); //растеризовали все фигуры
             }
 
             int withmiddle = width / 2;
@@ -224,6 +298,7 @@ namespace GraphicsHelper
             int index = 0;
             for (int i = 0; i < rasterscene.Count(); i++)
             {
+                Color color1 = scene[i].GetColor;
                 for (int j = 0; j < rasterscene[i].Count(); j++)
                 {
                     List<Point> current = rasterscene[i][j]; //это типа грань но уже растеризованная
@@ -238,7 +313,14 @@ namespace GraphicsHelper
                             if (p.Zf < zbuffer[x, y])
                             {
                                 zbuffer[x, y] = p.Zf;
-                                canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
+                                if (mode == false)
+                                {
+                                    canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
+                                }
+                                else
+                                {
+                                    canvas.SetPixel(x, y, Color.FromArgb((int)(p.lightness * color1.R), (int)(p.lightness * color1.G), (int)(p.lightness * color1.B)));
+                                }
                             }
                         }
                     }
