@@ -12,7 +12,6 @@ namespace GraphicsHelper
 
     class Z_buffer
     {
-
         /// <summary>
         /// Интерполяция точек
         /// </summary>
@@ -39,26 +38,30 @@ namespace GraphicsHelper
             return res;
         }
 
-        public static TexturePoint interpolateTexture(Vector a, Vector e1, Vector e2)
+        /// <summary>
+        /// Интерполяция точек
+        /// </summary>
+        /// <param name="x1">Стартовая точка</param>
+        /// <param name="y1">Стартовая точка</param>
+        /// <param name="x2">Конечная точка</param>
+        /// <param name="y2">Конечная точка</param>
+        public static List<double> interpolateDouble(double x1, double y1, double x2, double y2)
         {
-            double X = (a.Xf + e1.Xf + e2.Xf) / (a.Zf + e1.Zf + e2.Zf);
-            double Y = (a.Yf + e1.Yf + e2.Yf) / (a.Zf + e1.Zf + e2.Zf);
+            List<double> res = new List<double>();
+            if (x1 == x2)
+            {
+                res.Add(y2);
+            }
 
-            Vector n = (e1 * e2).normalize();
-            Vector m = (e2 * a).normalize();
-            Vector l = (a * e1).normalize();
+            double step = (y2 - y1) * 1.0f / (x2 - x1); //с таким шагом будем получать новые точки
+            double y = y1;
+            for (double i = x1; i <= x2; i++)
+            {
+                res.Add((double)y);
+                y += step;
+            }
 
-            Matrix m1 = new Matrix(3, 3).fill(m.Xf, m.Yf, m.Zf, l.Xf, l.Yf, l.Zf, n.Xf, n.Yf, n.Zf);
-            Matrix m2 = new Matrix(3, 1).fill(X, Y, 1);
-
-            Matrix matr = m1 * m2;
-
-            double u = matr[0, 0] / matr[2, 0];
-            double v = matr[1, 0] / matr[2, 0];
-
-            TexturePoint tp = new TexturePoint(u, v);
-
-            return tp;
+            return res;
         }
 
         //растеризация треугольника
@@ -66,17 +69,15 @@ namespace GraphicsHelper
         /// Растеризация треугольника
         /// </summary>
         /// <param name="points">Список вершин треугольника</param>
-        public static List<Point> Raster(List<Point> points, Dictionary<Tuple<double,double,double>, TexturePoint> texels)
+        public static List<Point> Raster(List<Point> points, List<TexturePoint> tp)
         {
             List<Point> res = new List<Point>();
             //отсортировать точки по неубыванию ординаты
             points.Sort((p1, p2) => p1.Y.CompareTo(p2.Y));
 
-            Vector texture_p1 = new Vector(points[1]), texture_p2 = new Vector(points[0]), texture_p4 = new Vector(points[2]);
-
-            //Vector a = texture_p1;
-            //TexturePoint tp = interpolateTexture(a, e1, e2, n);
-            //texels[a] = interpolateTexture(a, e1, e2, n);
+            var uv01 = interpolateDouble(tp[0].U, tp[0].V, tp[1].U, tp[1].V);
+            var uv12 = interpolateDouble(tp[1].U, tp[1].V, tp[2].U, tp[2].V);
+            var uv02 = interpolateDouble(tp[0].U, tp[0].V, tp[2].U, tp[2].V);
 
             // "рабочие точки"
             // изначально они находятся в верхней точке
@@ -119,14 +120,7 @@ namespace GraphicsHelper
                 List<int> zcurr = interpolate(leftx, lz[i], rightx, rz[i]);
                 for (int j = leftx; j < rightx; j++)
                 {
-                    Point aa = new Point(j, y0 + i, zcurr[j - leftx]);
-                    res.Add(aa);
-
-                    Vector a = new Vector(aa, true);
-                    Vector e1 = (texture_p2 - a).normalize();
-                    Vector e2 = (texture_p4 - a).normalize();
-                    TexturePoint tp = interpolateTexture(a, e1, e2);
-                    texels[Tuple.Create(aa.Xf, aa.Yf, aa.Zf)] = tp;
+                    res.Add(new Point(j, y0 + i, zcurr[j - leftx]));
                 }
             }
 
@@ -144,14 +138,12 @@ namespace GraphicsHelper
             List<List<Point>> res = new List<List<Point>>();
             if (points.Count == 3)
             {
-                res = new List<List<Point>> {points
-    };
+                res = new List<List<Point>> { points };
             }
 
             for (int i = 2; i < points.Count(); i++)
             {
-                res.Add(new List<Point> {points[0], points[i - 1],
-points[i]}); //points[0]
+                res.Add(new List<Point> { points[0], points[i - 1], points[i] }); //points[0]
             }
 
             return res;
@@ -163,7 +155,7 @@ points[i]}); //points[0]
         /// </summary>
         /// <param name="figure">Фигура</param>
         /// <param name="camera">Камера</param>
-        public static List<List<Point>> RasterFigure(Shape figure, Camera camera, Dictionary<Tuple<double,double,double>, TexturePoint> texels = null)
+        public static List<List<Point>> RasterFigure(Shape figure, Camera camera, Dictionary<Tuple<double, double, double>, TexturePoint> texels = null)
         {
             List<List<Point>> res = new List<List<Point>>();
             foreach (var polygon in figure.Faces) //каждая грань-это многоугольник, который надо растеризовать
@@ -179,11 +171,14 @@ points[i]}); //points[0]
                 List<List<Point>> triangles = Triangulate(points); //разбили все грани на треугольники
                 foreach (var triangle in triangles)
                 {
-                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera), texels)); //projection(triangle)
-                                                                                                         //currentface.AddRange(Raster(triangle));
+                    List<TexturePoint> tp = new List<TexturePoint>();
+                    foreach (Vertex v in triangle)
+                        tp.Add(v.texturePoint);
+                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera), tp)); //projection(triangle)
+                    //currentface.AddRange(Raster(triangle));
                 }
 
-                res.Add(currentface); 
+                res.Add(currentface);
             }
 
             return res;
@@ -194,7 +189,7 @@ points[i]}); //points[0]
         /// </summary>
         /// <param name="points">Список точек</param>
         /// <param name="camera">Камера</param>
-        public static List<Point> ProjectionToPlane(List<Point> points, Camera camera) //Camera camera,ProjectionType type
+        public static List<Point> ProjectionToPlane(List<Point> points, Camera camera) //Camera camera,ProjectionType type 
         {
             List<Point> res = new List<Point>();
             // float c = 1000;
@@ -225,7 +220,7 @@ points[i]}); //points[0]
             var matrfrompoint = new Matrix(4, 1).fill(p.Xf, p.Yf, p.Zf, 1);
 
             var matrPoint = matrix * matrfrompoint; //применение преобразования к точке
-                                                    //Point newPoint = new Point(matrPoint[0, 0] / matrPoint[3, 0], matrPoint[1, 0] / matrPoint[3, 0], matrPoint[2, 0] / matrPoint[3, 0]);
+            //Point newPoint = new Point(matrPoint[0, 0] / matrPoint[3, 0], matrPoint[1, 0] / matrPoint[3, 0], matrPoint[2, 0] / matrPoint[3, 0]);
             Point newPoint = new Point(matrPoint[0, 0], matrPoint[1, 0], matrPoint[2, 0]);
             return newPoint;
         }
@@ -246,12 +241,12 @@ points[i]}); //points[0]
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
                     canvas.SetPixel(i, j, Color.White); //new System.Drawing.Point(i, j)
-                                                        //z-буфер
+            //z-буфер
             double[,] zbuffer = new double[width, height];
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
                     zbuffer[i, j] = double.MaxValue; //Изначально, буфер
-                                                     // инициализируется значением z = zmax
+            // инициализируется значением z = zmax
             List<List<List<Point>>> rasterscene = new List<List<List<Point>>>();
             for (int i = 0; i < scene.Count(); i++)
             {
@@ -270,15 +265,14 @@ points[i]}); //points[0]
                     {
                         int x = (int)(p.X); //
 
-                        int
-                        y = (int)(p.Y); // + heightmiddle
+                        int y = (int)(p.Y); // + heightmiddle 
                         ;
                         if (x < width && y < height && y > 0 && x > 0)
                         {
                             if (p.Zf < zbuffer[x, y])
                             {
                                 zbuffer[x, y] = p.Zf;
-                                canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height -
+                                canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
                             }
                         }
                     }
@@ -354,9 +348,7 @@ points[i]}); //points[0]
 
                                 /*                                if (texels[index] == null)
                                                                     index--;
-
                                                                 int tempii = ii + (int)texels[index].U >= widthTexture ? ii : ii + (int)texels[index].U;
-
                                                                 int tempjj = jj + (int)texels[index].V >= heightTexture ? jj : jj + (int)texels[index].V;
                                 */
 
@@ -388,7 +380,7 @@ points[i]}); //points[0]
                                     //else if (texels[v].U < -1)
                                     //    w = widthTextureMiddle + widthTextureMiddle * (-1);
                                     //else
-                                        w = /*widthTextureMiddle +*/ (widthTexture-1) * texels[pxl].U% widthTexture;
+                                    w = /*widthTextureMiddle +*/ (widthTexture - 1) * texels[pxl].U % widthTexture;
 
                                     //if (texels[v].V < 0)
                                     //    h = heightTextureMiddle + heightTexture * texels[v].V;
@@ -399,7 +391,7 @@ points[i]}); //points[0]
                                     //else if (texels[v].V < -1)
                                     //    h = heightTextureMiddle + heightTextureMiddle *(-1);
                                     //else
-                                    h = /*heightTextureMiddle + */( heightTexture-1) * texels[pxl].V% heightTexture;
+                                    h = /*heightTextureMiddle + */(heightTexture - 1) * texels[pxl].V % heightTexture;
 
                                     //var w = Math.Abs(widthTexture * texels[v].U);
                                     //var h = Math.Abs(heightTexture * texels[v].V);
@@ -407,9 +399,9 @@ points[i]}); //points[0]
                                     //w = Math.Abs(w);
                                     //h = Math.Abs(h);
                                     //while (w >= widthTexture)
-                                     //  w--;
+                                    //  w--;
                                     //while (h >= heightTexture)
-                                     //   h--;
+                                    //   h--;
                                     c = textureBitmap.GetPixel((int)(w), (int)(h));
                                 }
 
