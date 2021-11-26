@@ -187,14 +187,14 @@ namespace AdvancedGraphics
 
         private void buttonRotate_Click(object sender, EventArgs e)
         {
-            sceneShapes[listBox.SelectedIndex] = AffineTransformations.rotate(sceneShapes[listBox.SelectedIndex],(AxisType)selectAxis.SelectedIndex, double.Parse(textAngle.Text, CultureInfo.InvariantCulture.NumberFormat));
+            sceneShapes[listBox.SelectedIndex] = AffineTransformations.rotate(sceneShapes[listBox.SelectedIndex],(AxisType)selectAxis.SelectedIndex, double.Parse(textAngle.Text/*, CultureInfo.InvariantCulture.NumberFormat*/));
             
         }
 
         private void buttonScale_Click(object sender, EventArgs e)
         {
             sceneShapes[listBox.SelectedIndex] = AffineTransformations.scale(sceneShapes[listBox.SelectedIndex],
-                double.Parse(textScaleX.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleY.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleZ.Text, CultureInfo.InvariantCulture.NumberFormat));
+                double.Parse(textScaleX.Text/*, CultureInfo.InvariantCulture.NumberFormat*/), double.Parse(textScaleY.Text/*, CultureInfo.InvariantCulture.NumberFormat*/), double.Parse(textScaleZ.Text/*, CultureInfo.InvariantCulture.NumberFormat*/));
         }
 
         private void buttonLoadTexture_Click(object sender, EventArgs e)

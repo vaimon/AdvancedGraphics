@@ -69,15 +69,11 @@ namespace GraphicsHelper
         /// Растеризация треугольника
         /// </summary>
         /// <param name="points">Список вершин треугольника</param>
-        public static List<Point> Raster(List<Point> points, List<TexturePoint> tp)
+        public static List<Point> Raster(List<Point> points)
         {
             List<Point> res = new List<Point>();
             //отсортировать точки по неубыванию ординаты
             points.Sort((p1, p2) => p1.Y.CompareTo(p2.Y));
-
-            var uv01 = interpolateDouble(tp[0].U, tp[0].V, tp[1].U, tp[1].V);
-            var uv12 = interpolateDouble(tp[1].U, tp[1].V, tp[2].U, tp[2].V);
-            var uv02 = interpolateDouble(tp[0].U, tp[0].V, tp[2].U, tp[2].V);
 
             // "рабочие точки"
             // изначально они находятся в верхней точке
@@ -92,6 +88,13 @@ namespace GraphicsHelper
             var xy = xy01.Concat(xy12).ToList();
             yz01.RemoveAt(yz01.Count() - 1);
             var yz = yz01.Concat(yz12).ToList();
+
+            var uv01 = interpolateDouble((new Vertex(wpoints[0].x,wpoints[0].z,wpoints[0].z)).texturePoint.U, (new Vertex(wpoints[0].x,wpoints[0].y,wpoints[0].z)).texturePoint.V, (new Vertex(wpoints[1].x,wpoints[1].y,wpoints[1].z)).texturePoint.U, (new Vertex(wpoints[0].x,wpoints[0].y,wpoints[0].z)).texturePoint.V);
+            var uv12 = interpolateDouble((new Vertex(wpoints[1].x,wpoints[1].z,wpoints[1].z)).texturePoint.U, (new Vertex(wpoints[1].x,wpoints[1].z,wpoints[1].z)).texturePoint.V, (new Vertex(wpoints[2].x,wpoints[2].z,wpoints[2].z)).texturePoint.U, (new Vertex(wpoints[2].x,wpoints[2].z,wpoints[2].z)).texturePoint.V);
+            var uv02 = interpolateDouble((new Vertex(wpoints[0].x,wpoints[0].z,wpoints[0].z)).texturePoint.U, (new Vertex(wpoints[0].x,wpoints[0].z,wpoints[0].z)).texturePoint.V, (new Vertex(wpoints[2].x,wpoints[2].z,wpoints[2].z)).texturePoint.U, (new Vertex(wpoints[2].x,wpoints[2].z,wpoints[2].z)).texturePoint.V);
+            uv01.RemoveAt(uv01.Count() - 1); //убрать точку, чтобы не было повтора
+            var uv = uv01.Concat(uv12).ToList();
+
             //когда растеризуем, треугольник делим надвое
             //ищем координаты, чтобы разделить треугольник на 2
             int center = xy.Count() / 2;
@@ -111,6 +114,22 @@ namespace GraphicsHelper
                 rz = yz02;
             }
 
+            //когда растеризуем, треугольник делим надвое
+            //ищем координаты, чтобы разделить треугольник на 2
+            int centerUV = uv.Count() / 2;
+            List<double> lxUV, rxUV;//для приращений
+            if (uv02[centerUV] < uv[centerUV])
+            {
+                lxUV = uv02;
+                rxUV = uv;
+            }
+            else
+            {
+                lxUV = uv;
+                rxUV = uv02;
+            }
+
+            Point pp = null;
             int y0 = wpoints[0].y;
             int y2 = wpoints[2].y;
             for (int i = 0; i <= y2 - y0; i++)
@@ -120,14 +139,27 @@ namespace GraphicsHelper
                 List<int> zcurr = interpolate(leftx, lz[i], rightx, rz[i]);
                 for (int j = leftx; j < rightx; j++)
                 {
-                    res.Add(new Point(j, y0 + i, zcurr[j - leftx]));
+                    pp = new Point(j, y0 + i, zcurr[j - leftx]);
+                    res.Add(pp);
+                }
+            }
+
+            
+            double v0 = (new Vertex(wpoints[0].x,wpoints[0].z,wpoints[0].z)).texturePoint.V;
+            double v2 = (new Vertex(wpoints[2].x,wpoints[2].z,wpoints[2].z)).texturePoint.V;
+            for (int i = 0; i <= v2 - v0; i++)
+            {
+                double leftu = lxUV[i];
+                double rightu = rxUV[i];
+                for (double j = leftu; j < rightu; j++)
+                {
+                    (pp as Vertex).texturePoint = new TexturePoint(j, v0+i);
                 }
             }
 
             return res;
         }
 
-        //разбиение на треугольники
         /// <summary>
         /// Разбиение полигона на треугольники
         /// </summary>
@@ -171,10 +203,8 @@ namespace GraphicsHelper
                 List<List<Point>> triangles = Triangulate(points); //разбили все грани на треугольники
                 foreach (var triangle in triangles)
                 {
-                    List<TexturePoint> tp = new List<TexturePoint>();
                     foreach (Vertex v in triangle)
-                        tp.Add(v.texturePoint);
-                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera), tp)); //projection(triangle)
+                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera))); //projection(triangle)
                     //currentface.AddRange(Raster(triangle));
                 }
 
@@ -352,7 +382,7 @@ namespace GraphicsHelper
                                                                 int tempjj = jj + (int)texels[index].V >= heightTexture ? jj : jj + (int)texels[index].V;
                                 */
 
-                                Tuple<double, double, double> pxl = Tuple.Create(p.Xf, p.Yf, p.Zf);
+                                //Tuple<double, double, double> pxl = Tuple.Create(p.Xf, p.Yf, p.Zf);
                                 //Color c = Color.Black;
                                 //if (texels.ContainsKey(v))
                                 //   c = textureBitmap.GetPixel((int)(widthTexture * texels[v].U), (int)(heightTexture * texels[v].V));
@@ -365,10 +395,10 @@ namespace GraphicsHelper
                                                                     c = textureBitmap.GetPixel((int)(widthTexture * lc[ind].U), (int)(heightTexture * lc[ind].V));
                                                                 }*/
                                 Color c;
-                                if (pxl == null || texels[pxl] == null)
-                                    c = Color.Black;
-                                else
-                                {
+                               // if (pxl == null || texels[pxl] == null)
+                                 //   c = Color.Black;
+                                //else
+                                //{
                                     double w = widthTextureMiddle, h = heightTextureMiddle;
                                     //if (texels[v].U < 0)
                                     //   w = widthTextureMiddle + widthTexture * texels[v].U;
@@ -380,7 +410,7 @@ namespace GraphicsHelper
                                     //else if (texels[v].U < -1)
                                     //    w = widthTextureMiddle + widthTextureMiddle * (-1);
                                     //else
-                                    w = /*widthTextureMiddle +*/ (widthTexture - 1) * texels[pxl].U % widthTexture;
+                                    w = /*widthTextureMiddle +*/ (widthTexture - 1) * (p as Vertex).texturePoint.U % widthTexture;
 
                                     //if (texels[v].V < 0)
                                     //    h = heightTextureMiddle + heightTexture * texels[v].V;
@@ -391,7 +421,7 @@ namespace GraphicsHelper
                                     //else if (texels[v].V < -1)
                                     //    h = heightTextureMiddle + heightTextureMiddle *(-1);
                                     //else
-                                    h = /*heightTextureMiddle + */(heightTexture - 1) * texels[pxl].V % heightTexture;
+                                    h = /*heightTextureMiddle + */(heightTexture - 1) *  (p as Vertex).texturePoint.V % heightTexture;
 
                                     //var w = Math.Abs(widthTexture * texels[v].U);
                                     //var h = Math.Abs(heightTexture * texels[v].V);
@@ -403,7 +433,7 @@ namespace GraphicsHelper
                                     //while (h >= heightTexture)
                                     //   h--;
                                     c = textureBitmap.GetPixel((int)(w), (int)(h));
-                                }
+                                //}
 
                                 /*                                if (ii + 1 < heightTexture)
                                                                     ii++;
