@@ -71,8 +71,8 @@ namespace AdvancedGraphics
         }
         void DrawPoint(Point p)
         {
-            drawVuLine(new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
-            drawVuLine(new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
+            AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
+            AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
         }
 
         /// <summary>

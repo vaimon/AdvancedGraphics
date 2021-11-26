@@ -41,7 +41,9 @@ namespace GraphicsHelper
 
         public static double GetIntense(double lightness)
         {
-            return (lightness+1) /2;
+            return (lightness+1) /2;//у Яны в презентации (1+cos)/2
+            //return lightness*0.3*0.7;//что-то интуитивные коэффициенты не помогают
+
         }
         //вектор нормали к вершине считается как сумма векторов нормалей прилежащих к этой вершине граней, поделенная на количество этих граней
         /// <summary>

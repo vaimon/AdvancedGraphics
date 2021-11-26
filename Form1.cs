@@ -25,7 +25,7 @@ namespace AdvancedGraphics
         List<Color> colorrange;
         Shape shapeWithoutNonFacial; // фигура без нелицевых граней
         bool isPruningFaces = false;
-
+        bool is_lighting;
         public Form1()
         {
             sceneShapes = new BindingList<Shape>();
@@ -181,8 +181,9 @@ namespace AdvancedGraphics
 
         private void z_buffer_Click(object sender, EventArgs e)
         {
+            is_lighting = false;
             List<Shape> l = sceneShapes.ToList();
-            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera,lightSource, colorrange,false);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera,lightSource, colorrange,is_lighting);
             canvas.Image = bmp;
             canvas.Invalidate();
         }
@@ -214,9 +215,10 @@ namespace AdvancedGraphics
         private void buttonLighting_Click(object sender, EventArgs e)
         {
             //sceneShapes[0].SetColor(Color.Red);
+            is_lighting = true;
             List<Shape> l = sceneShapes.ToList();
             //Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height,l, lightSource, sceneShapes[0].GetColor, camera);
-            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, true);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, is_lighting);
             canvas.Image = bmp;
             canvas.Invalidate();
             //redrawScene();

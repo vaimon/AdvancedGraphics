@@ -141,7 +141,7 @@ namespace GraphicsHelper
                 int leftx = lx[i];
                 int rightx = rx[i];
                 List<int> zcurr = interpolate(leftx, lz[i], rightx, rz[i]);
-                if (mode)
+                if (mode)//если освещаем, то интерполируем освещенность, которую мы получили в вершинах
                 {
                     List<double> intense_current = interpolate_intense(leftx, leftintense[i], rightx, rightintense[i]);
                     for (int j = leftx; j < rightx; j++)
@@ -263,7 +263,9 @@ namespace GraphicsHelper
         /// <param name="height">Высота канваса</param>
         /// <param name="scene">Множество фигур на сцене</param>
         /// <param name="camera">Камера</param>
+        /// <param name="light">Источник света</param>
         /// <param name="colors">Список цветов</param>
+        /// <param name="mode">Режим: false для отсечения невидимых и true для освещения</param>
         public static Bitmap z_buf(int width, int height, List<Shape> scene, Camera camera, AdvancedGraphics.CoolStuff.LightSource light, List<Color> colors,bool mode)
         {
             //Bitmap bitmap = new Bitmap(width, height);
@@ -313,11 +315,11 @@ namespace GraphicsHelper
                             if (p.Zf < zbuffer[x, y])
                             {
                                 zbuffer[x, y] = p.Zf;
-                                if (mode == false)
+                                if (mode == false)//если это алгоритм отсечения невидимых граней
                                 {
                                     canvas.SetPixel(x, y, colors[index % colors.Count()]); //canvas.Height - 
                                 }
-                                else
+                                else//иначе это осчещение, тогда меняем цвет точки согласно степени ее освещенности
                                 {
                                     canvas.SetPixel(x, y, Color.FromArgb((int)(p.lightness * color1.R), (int)(p.lightness * color1.G), (int)(p.lightness * color1.B)));
                                 }
