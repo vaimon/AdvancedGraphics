@@ -37,7 +37,7 @@ namespace AdvancedGraphics
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             camera = new Camera();
             // lightSource = new LightSource(new Point(100, 100, 100));
-            lightSource = new LightSource(new Point(400, 400, 400));
+            lightSource = new LightSource(new Point(100, 100, 100));
           
             // А здесь задаём точку начала координат
             Point.worldCenter = new PointF(canvas.Width / 2, canvas.Height / 2);
