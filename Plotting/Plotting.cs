@@ -83,6 +83,7 @@ namespace AdvancedGraphics
             {
                 displayType = DisplayType.TRIANGLES;
             }
+            redraw();
         }
 
         private void rbLines_CheckedChanged(object sender, EventArgs e)
@@ -91,6 +92,7 @@ namespace AdvancedGraphics
             {
                 displayType = DisplayType.LINES;
             }
+            redraw();
         }
 
         private void rbNet_CheckedChanged(object sender, EventArgs e)
@@ -99,6 +101,7 @@ namespace AdvancedGraphics
             {
                 displayType = DisplayType.NET;
             }
+            redraw();
         }
 
         private void FormPlotting_KeyPress(object sender, KeyPressEventArgs e)

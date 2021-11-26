@@ -125,7 +125,243 @@ namespace AdvancedGraphics
 
 
         // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
-        void floatingHorizon(Func<double, double, double> f)
+        void floatingHorizonByLines(Func<double, double, double> f)
+        {
+            double step = threshold * 2.0 / splitting;
+
+            upHorizon = new double[canvas.Width];
+            downHorizon = new double[canvas.Width];
+
+            for (int i = 0; i < canvas.Width; i++)
+            {
+                upHorizon[i] = double.MinValue;
+                downHorizon[i] = double.MaxValue;
+            }
+
+            var bitmap = new Bitmap(canvas.Width, canvas.Height);
+            var fbitmap = new FastBitmap.FastBitmap(bitmap);
+
+            for (double z = threshold; z >= -threshold; z -= step)
+            {
+                FloatingPoint previous = getScaledPoint(new Point(-threshold, f(-threshold, z), z));
+                for (double x = -threshold; x <= threshold; x += step)
+                {
+                    FloatingPoint current = getScaledPoint(new Point(x, f(x, z), z));
+
+                    if (current.Visibility == Visibilty.VISIBLE_UP)
+                    {
+                        if (previous.Visibility != Visibilty.INVISIBLE)
+                        {
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_UP));
+                            //upHorizon[current.X] = current.Yf;
+                            updateHorizons(previous, current);
+                        }else
+                        {
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(current,mid);
+                        }
+                        
+                    }
+                    else if (current.Visibility == Visibilty.VISIBLE_DOWN)
+                    {
+                        if (previous.Visibility != Visibilty.INVISIBLE)
+                        {
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            //downHorizon[current.X] = current.Yf;
+                            updateHorizons(previous, current);
+                        }
+                        else
+                        {
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(current,mid);
+                        }
+                        
+                    }
+                    else
+                    {
+                        if (previous.Visibility == Visibilty.VISIBLE_UP)
+                        {
+                            //var mid = intersect(z,x-step,x, f,upHorizon);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(previous,mid);
+                        } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
+                        {
+                            //var mid = intersect(z,x-step,x, f,downHorizon);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(previous,mid);
+                        }
+
+                        // if (previous.Visibility != Visibilty.INVISIBLE)
+                        // {
+                        //     AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                        //         getColorByVisibility(previous.Visibility));
+                        //     updateHorizons(previous, current);
+                        // }
+                    }
+
+                    previous = current;
+                }
+            }
+
+            fbitmap.Dispose();
+            canvas.Image = bitmap;
+        }
+        
+        List<FloatingPoint> prevLine;
+
+        void drawNet(ref FastBitmap.FastBitmap fbitmap, int xNumber, FloatingPoint current, Color color)
+        {
+            if (prevLine.Count != 0)
+            {
+                var previous = prevLine[xNumber];
+                if (current.Visibility != Visibilty.INVISIBLE)
+                {
+                    if (previous.Visibility != Visibilty.INVISIBLE)
+                    {
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                            color);
+                    }
+                    else
+                    {
+                        var mid = intersect(current, previous);
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, mid.toSimple2D(), current.toSimple2D(),
+                            color);
+                    }
+                }
+                else
+                {
+                    if (previous.Visibility != Visibilty.INVISIBLE)
+                    {
+                        var mid = antiIntersect(current, previous);
+                        AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
+                            color);
+                    }
+                }
+            }
+        }
+        
+        // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
+        void floatingHorizonByNet(Func<double, double, double> f)
+        {
+            double step = threshold * 2.0 / splitting;
+
+            upHorizon = new double[canvas.Width];
+            downHorizon = new double[canvas.Width];
+
+            for (int i = 0; i < canvas.Width; i++)
+            {
+                upHorizon[i] = double.MinValue;
+                downHorizon[i] = double.MaxValue;
+            }
+
+            var bitmap = new Bitmap(canvas.Width, canvas.Height);
+            var fbitmap = new FastBitmap.FastBitmap(bitmap);
+
+            prevLine = new List<FloatingPoint>();
+            for (double z = threshold; z >= -threshold; z -= step)
+            {
+                List<FloatingPoint> currLine = new List<FloatingPoint>();
+                FloatingPoint previous = getScaledPoint(new Point(-threshold, f(-threshold, z), z));
+                
+                for (double x = -threshold; x <= threshold; x += step)
+                {
+                    FloatingPoint current = getScaledPoint(new Point(x, f(x, z), z));
+                    currLine.Add(current);
+                    if (current.Visibility == Visibilty.VISIBLE_UP)
+                    {
+                        if (previous.Visibility != Visibilty.INVISIBLE)
+                        {
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_UP));
+                            //upHorizon[current.X] = current.Yf;
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(previous, current);
+                        }else
+                        {
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(current,mid);
+                        }
+                        
+                    }
+                    else if (current.Visibility == Visibilty.VISIBLE_DOWN)
+                    {
+                        if (previous.Visibility != Visibilty.INVISIBLE)
+                        {
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                                getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            //downHorizon[current.X] = current.Yf;
+                            updateHorizons(previous, current);
+                        }
+                        else
+                        {
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(current,mid);
+                        }
+                        
+                    }
+                    else
+                    {
+                        if (previous.Visibility == Visibilty.VISIBLE_UP)
+                        {
+                            //var mid = intersect(z,x-step,x, f,upHorizon);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(previous,mid);
+                        } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
+                        {
+                            //var mid = intersect(z,x-step,x, f,downHorizon);
+                            var mid = antiIntersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            drawNet(ref fbitmap, currLine.Count - 1, current, getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(previous,mid);
+                        }
+
+                        // if (previous.Visibility != Visibilty.INVISIBLE)
+                        // {
+                        //     AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                        //         getColorByVisibility(previous.Visibility));
+                        //     updateHorizons(previous, current);
+                        // }
+                    }
+
+                    previous = current;
+                }
+
+                prevLine = currLine;
+            }
+
+            fbitmap.Dispose();
+            canvas.Image = bitmap;
+        }
+        
+        // Вдохновение черпалось с сайта республики Марий Эл. Да, настолько всё плохо... http://www.mari-el.ru/mmlab/home/kg/Lection10/2.html
+        void floatingHorizonByTriangles(Func<double, double, double> f)
         {
             double step = threshold * 2.0 / splitting;
 
@@ -222,7 +458,20 @@ namespace AdvancedGraphics
 
         void redraw()
         {
-            floatingHorizon(SelectedFunction);
+            switch (displayType)
+            {
+                case DisplayType.TRIANGLES:
+                    floatingHorizonByTriangles(SelectedFunction);
+                    break;
+                case DisplayType.LINES:
+                    floatingHorizonByLines(SelectedFunction);
+                    break;
+                case DisplayType.NET:
+                    floatingHorizonByNet(SelectedFunction);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
