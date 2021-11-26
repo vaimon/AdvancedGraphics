@@ -89,31 +89,21 @@ namespace AdvancedGraphics
         //     // return mid;
         // }
         
-        ReducedFloatingPoint intersect(FloatingPoint previous, FloatingPoint curr, ref double[] horizon)
+        FloatingPoint intersect(FloatingPoint previous, FloatingPoint curr)
         {
-            if (curr.X - previous.X == 0)
+            double xStep = (curr.Xf - previous.Xf * 1.0) / 20;
+            double yStep = (curr.Yf - previous.Yf * 1.0) / 20;
+            for (int i = 1; i <= 20; i++)
             {
-                return new ReducedFloatingPoint(previous.X, (int) (horizon[previous.X]));
+                var point = new FloatingPoint(Math.Clamp(previous.Xf + i * xStep, 0,canvas.Width - 1), previous.Yf + i * yStep, curr.Zf, ref upHorizon,
+                    ref downHorizon);
+                if (point.Visibility == Visibilty.INVISIBLE)
+                {
+                    return point;
+                }
             }
 
-            var tg = (curr.Yf - previous.Yf) / (curr.Xf - previous.Xf);
-            var visibilityLeft = Math.Sign(previous.Yf + tg - horizon[previous.X + 1]);
-            var visibilityWork = visibilityLeft;
-            var y = previous.Yf + tg;
-            var x = previous.X + 1;
-            while (visibilityLeft == visibilityWork)
-            {
-                y += tg;
-                x += 1;
-                visibilityWork = Math.Sign(y - horizon[x]);
-            }
-
-            if (Math.Abs(y - tg - horizon[x - 1]) <= Math.Abs(y - horizon[x]))
-            {
-                y -= tg;
-                x -= 1;
-            }
-            return new ReducedFloatingPoint(x, (int)(y));
+            return curr;
         }
 
 
@@ -151,9 +141,13 @@ namespace AdvancedGraphics
                             updateHorizons(previous, current);
                         }else
                         {
-                            AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
-                                getColorByVisibility(current.Visibility));
-                            updateHorizons(previous, current);
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_UP));
+                            updateHorizons(current,mid);
                         }
                         
                     }
@@ -168,36 +162,37 @@ namespace AdvancedGraphics
                         }
                         else
                         {
-                            AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
-                                getColorByVisibility(current.Visibility));
-                            updateHorizons(previous, current);
+                            // AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, current.toSimple2D(), previous.toSimple2D(),
+                            //     getColorByVisibility(current.Visibility));
+                            // updateHorizons(previous, current);
+                            var mid = intersect(current, previous);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, current.toSimple2D(), mid.toSimple2D(),getColorByVisibility(Visibilty.VISIBLE_DOWN));
+                            updateHorizons(current,mid);
                         }
                         
                     }
                     else
                     {
-                        // if (previous.Visibility == Visibilty.VISIBLE_UP)
-                        // {
-                        //     //var mid = intersect(z,x-step,x, f,upHorizon);
-                        //     var mid = intersect(previous,current,ref upHorizon);
-                        //     AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
-                        //         getColorByVisibility(Visibilty.VISIBLE_UP));
-                        //     updateHorizons(previous,mid);
-                        // } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
-                        // {
-                        //     //var mid = intersect(z,x-step,x, f,downHorizon);
-                        //     var mid = intersect(previous,current,ref downHorizon);
-                        //     AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),
-                        //         getColorByVisibility(Visibilty.VISIBLE_DOWN));
-                        //     updateHorizons(previous,mid);
-                        // }
-
-                        if (previous.Visibility != Visibilty.INVISIBLE)
+                        if (previous.Visibility == Visibilty.VISIBLE_UP)
                         {
-                            AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
-                                getColorByVisibility(previous.Visibility));
-                            updateHorizons(previous, current);
+                            //var mid = intersect(z,x-step,x, f,upHorizon);
+                            var mid = intersect(previous, current);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, previous.toSimple2D(), mid.toSimple2D(),Color.Green);
+                            updateHorizons(previous,mid);
+                        } else if (previous.Visibility == Visibilty.VISIBLE_DOWN)
+                        {
+                            //var mid = intersect(z,x-step,x, f,downHorizon);
+                            var mid = intersect(previous, current);
+                            AdditionalAlgorithms.drawVuLine(ref fbitmap, mid.toSimple2D(), current.toSimple2D(),Color.Red);
+                            updateHorizons(mid,current);
                         }
+
+                        // if (previous.Visibility != Visibilty.INVISIBLE)
+                        // {
+                        //     AdditionalAlgorithms.drawVuLineWithColorStop(ref fbitmap, previous.toSimple2D(), current.toSimple2D(),
+                        //         getColorByVisibility(previous.Visibility));
+                        //     updateHorizons(previous, current);
+                        // }
                     }
 
                     previous = current;
