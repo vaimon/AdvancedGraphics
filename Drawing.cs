@@ -31,7 +31,7 @@ namespace AdvancedGraphics
         /// <param name="shape">Фигура, которую надо нарисовать</param>
         void drawShape(Shape shape, Pen pen)
         {
-            foreach (var face in shape.Faces.Where(face => face.isFacial))
+            foreach (var face in shape.Faces)
             {
                 drawFace(face, pen);
             }
@@ -71,8 +71,8 @@ namespace AdvancedGraphics
         }
         void DrawPoint(Point p)
         {
-            AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
-            AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
+            AdditionalAlgorithms.drawVuLine(ref fbitmap,new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
+            AdditionalAlgorithms.drawVuLine(ref fbitmap,new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
         }
 
         /// <summary>
