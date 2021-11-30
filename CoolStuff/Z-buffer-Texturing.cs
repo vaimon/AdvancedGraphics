@@ -151,9 +151,13 @@ namespace GraphicsHelper
                 }
                 else
                 {
+                    if (y0 + i - (int) ymin > ymax - ymin)
+                    {
+                        
+                    }
                     for (int j = leftx; j < rightx; j++)
                     {
-                        res.Add(new Vertex(j, y0 + i, zcurr[j - leftx],lightness: 0, u: (j - xmin) / (xmax-xmin), v: (y0 + i - ymin) / (ymax-ymin)));
+                        res.Add(new Vertex(j, y0 + i, zcurr[j - leftx],lightness: 0, u: (j - (int)xmin) / (xmax-(int)xmin), v: (y0 + i - (int)ymin) / (ymax-(int)ymin)));
                     }
                 }
             }
@@ -206,8 +210,9 @@ namespace GraphicsHelper
                 List<List<Vertex>> triangles = Triangulate(points); //разбили все грани на треугольники
                 foreach (var triangle in triangles)
                 {
-                    var bounds = Geometry.getTriangleBounds(triangle);
-                    currentface.AddRange(Raster(ProjectionToPlane(triangle, camera),mode,bounds.Item1,bounds.Item2,bounds.Item3,bounds.Item4)); //projection(triangle)
+                    var planeTriangle = ProjectionToPlane(triangle, camera);
+                    var bounds = Geometry.getTriangleBounds(planeTriangle);
+                    currentface.AddRange(Raster(planeTriangle, mode,bounds.Item1,bounds.Item2,bounds.Item3,bounds.Item4)); //projection(triangle)
                     //currentface.AddRange(Raster(triangle));
                 }
 
@@ -308,6 +313,12 @@ namespace GraphicsHelper
                 for (int j = 0; j < rasterscene[i].Count(); j++)
                 {
                     List<Vertex> current = rasterscene[i][j]; //это типа грань но уже растеризованная
+                    //var cntU = current.Count(x => x.texturePoint.U < 0);
+                    var cntV = current.Where(x => x.texturePoint.V < 0);
+                    if(cntV.Count() > 0)
+                    {
+                        int x = 5;
+                    }
                     foreach (Vertex p in current)
                     {
                         int x = (int) (p.X); //
@@ -324,7 +335,8 @@ namespace GraphicsHelper
                                 zbuffer[x, y] = p.Zf;
                                 if (mode == false)//если это текстурирование
                                 {
-                                    canvas.SetPixel(x, y, texture.GetPixel(new System.Drawing.Point((int)(u * (texture.Width - 1)), (int)(v * (texture.Height - 1))))); //canvas.Height - 
+                                    var color = texture.GetPixel(new System.Drawing.Point((int)(u * (texture.Width - 1)), (int)(v * (texture.Height - 1))));
+                                    canvas.SetPixel(x, y, color); //canvas.Height - 
                                 }
                                 else//иначе это осчещение, тогда меняем цвет точки согласно степени ее освещенности
                                 {

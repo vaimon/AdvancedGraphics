@@ -8,7 +8,9 @@
         
         public Vertex(int x, int y, int z,double lightness=1.0) : base(x, y, z,lightness) { }
 
-        public Vertex(double x, double y, double z, double lightness = 1.0, double u = 0, double v = 0) : base(x, y, z,lightness) { }
+        public Vertex(double x, double y, double z, double lightness = 1.0, double u = 0, double v = 0) : base(x, y, z,lightness) {
+            texturePoint = new TexturePoint(u, v);
+        }
 
         public Vertex(Point p) : base(p) { }
 
