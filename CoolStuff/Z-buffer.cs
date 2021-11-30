@@ -233,8 +233,8 @@ namespace GraphicsHelper
                 {
                     // Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y,current.Item2);
                     //var current = transformPoint(p, matrix);
-                    var tocamv = camera.toCameraView(p);
-                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf,p.lightness);
+                    //var tocamv = camera.toCameraView(p);
+                    Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y, current.Item2,p.lightness);
                     res.Add(newpoint);
                 }
             }

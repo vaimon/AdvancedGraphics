@@ -169,7 +169,6 @@ namespace GraphicsHelper
         public Tuple<PointF?, double> to2D(Camera cam)
         {
             var viewCoord = cam.toCameraView(this);
-            var anti = cam.toWorldView(viewCoord);
 
             if (projection == ProjectionType.PARALLEL)
             {
@@ -177,7 +176,7 @@ namespace GraphicsHelper
                 {
                     return Tuple.Create<PointF?, double>(
                         new PointF(worldCenter.X + (float) viewCoord.Xf, worldCenter.Y + (float) viewCoord.Yf),
-                        (float) this.Zf);
+                        (float) viewCoord.Zf);
                 }
 
                 return null;
@@ -187,7 +186,7 @@ namespace GraphicsHelper
             {
                 if (viewCoord.Zf < 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                 }
 
                 //var eyeDistance = 200;
@@ -197,7 +196,7 @@ namespace GraphicsHelper
                              perspectiveProjectionMatrix;
                 if (res[0, 3] == 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                     //return new PointF(worldCenter.X + (float)res[0, 0] * worldCenter.X, worldCenter.Y + (float)res[0, 1] * worldCenter.Y);
                 }
 
@@ -207,14 +206,14 @@ namespace GraphicsHelper
                 //res[0, 2] = Math.Clamp(res[0, 2], -1, 1);
                 if (res[0, 2] < 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                 }
 
                 return Tuple.Create<PointF?, double>(
                     new PointF(worldCenter.X + (float) res[0, 0] * worldCenter.X,
-                        worldCenter.Y + (float) res[0, 1] * worldCenter.Y), (float) this.Zf);
+                        worldCenter.Y + (float) res[0, 1] * worldCenter.Y), (float) viewCoord.Zf);
             }
-            return Tuple.Create<PointF?, double>(to2D(), (float) this.Zf);
+            return Tuple.Create<PointF?, double>(to2D(), (float) viewCoord.Zf);
         }
 
         public override string ToString()
