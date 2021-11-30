@@ -200,15 +200,12 @@ namespace AdvancedGraphics
                 double.Parse(textScaleX.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleY.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleZ.Text, CultureInfo.InvariantCulture.NumberFormat));
         }
 
+        string textureFileName = "";
         private void buttonLoadTexture_Click(object sender, EventArgs e)
         {
             if (openFileDialog2.ShowDialog() == DialogResult.OK)
             {
-                Shape s = Shape.readShape(openFileDialog2.FileName);
-                sceneShapes.Add(s);
-                scene.Add(s);
-                changeToolsAccessibility(true);
-                redrawScene();
+                textureFileName = openFileDialog2.FileName;
             }
         }
 
@@ -221,7 +218,16 @@ namespace AdvancedGraphics
             Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, is_lighting);
             canvas.Image = bmp;
             canvas.Invalidate();
+            is_lighting = false;
             //redrawScene();
+        }
+
+        private void buttonTexturing_Click(object sender, EventArgs e)
+        {
+            List<Shape> l = sceneShapes.ToList();
+            Bitmap bmp = Z_buffer_texturing.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, false,textureFileName);
+            canvas.Image = bmp;
+            canvas.Invalidate();
         }
     }
 }
