@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Drawing;
+using AdvancedGraphics;
 
 namespace GraphicsHelper
 {
@@ -47,16 +48,16 @@ namespace GraphicsHelper
         /// <param name="i1">Стартовая точка</param>
         /// <param name="x2">Конечная точка</param>
         /// <param name="i2">Конечная точка</param>
-        public static List<double> interpolate_intense(int x1, double i1, int x2, double i2)
+        public static List<TexturePoint> interpolate_texture(int x1, TexturePoint t1, int x2, TexturePoint t2)
         {
-            List<double> res = new List<double>();
+            List<TexturePoint> res = new List<TexturePoint>();
             if (x1 == x2)
             {
-                res.Add(i1);
+                res.Add(t1);
             }
 
-            double step = (i2 - i1) / (x2 - x1); //с таким шагом будем получать новые значения
-            double y = i1;
+            TexturePoint step = (t2 - t1) / (x2 - x1); //с таким шагом будем получать новые значения
+            TexturePoint y = t1;
             for (int i = x1; i <= x2; i++)
             {
                 res.Add(y);
@@ -78,7 +79,7 @@ namespace GraphicsHelper
             points.Sort((p1, p2) => p1.Y.CompareTo(p2.Y));
             // "рабочие точки"
             // изначально они находятся в верхней точке
-            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z, intense: p.light)).ToList();
+            var wpoints = points.Select((p) => (x: (int) p.X, y: (int) p.Y, z: (int) p.Z, uv: p.texturePoint)).ToList();
             var xy01 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[1].y, wpoints[1].x);
             var xy12 = interpolate(wpoints[1].y, wpoints[1].x, wpoints[2].y, wpoints[2].x);
             var xy02 = interpolate(wpoints[0].y, wpoints[0].x, wpoints[2].y, wpoints[2].x);
@@ -93,9 +94,9 @@ namespace GraphicsHelper
             //ищем координаты, чтобы разделить треугольник на 2
             int center = xy.Count() / 2;
             List<int> lx, rx, lz, rz; //для приращений по координатам
-            List<double> leftintense, rightintense; //для приращений по интенсивности цвета
-            leftintense = new List<double>();
-            rightintense = new List<double>();
+            List<TexturePoint> lefttexture, righttexture; //для приращений по интенсивности цвета
+            lefttexture = new List<TexturePoint>();
+            righttexture = new List<TexturePoint>();
             if (xy02[center] < xy[center])
             {
                 lx = xy02;
@@ -110,7 +111,23 @@ namespace GraphicsHelper
                 rx = xy02;
                 rz = yz02;
             }
-            
+
+            var lighting01 = interpolate_texture(wpoints[0].y, wpoints[0].uv, wpoints[1].y, wpoints[1].uv);
+            var lighting12 = interpolate_texture(wpoints[1].y, wpoints[1].uv, wpoints[2].y, wpoints[2].uv);
+            var lighting02 = interpolate_texture(wpoints[0].y, wpoints[0].uv, wpoints[2].y, wpoints[2].uv);
+            lighting01.RemoveAt(lighting01.Count() - 1); //убрать точку, чтобы не было повтора
+            var lighting = lighting01.Concat(lighting12).ToList();
+            if (xy02[center] < xy[center])
+            {
+                lefttexture = lighting02;
+                righttexture = lighting;
+            }
+            else
+            {
+                lefttexture = lighting;
+                righttexture = lighting02;
+            }
+
             int y0 = wpoints[0].y;
             int y2 = wpoints[2].y;
             for (int i = 0; i <= y2 - y0; i++)
@@ -118,9 +135,11 @@ namespace GraphicsHelper
                 int leftx = lx[i];
                 int rightx = rx[i];
                 List<int> zcurr = interpolate(leftx, lz[i], rightx, rz[i]);
+
+                List<TexturePoint> texture_current = interpolate_texture(leftx, lefttexture[i], rightx, righttexture[i]);
                 for (int j = leftx; j < rightx; j++)
                 {
-                    res.Add(new Vertex(j, y0 + i, zcurr[j - leftx], lightness: 0, u:));
+                    res.Add(new Vertex(j, y0 + i, zcurr[j - leftx], texture_current[j - leftx]));
                 }
             }
 
@@ -172,9 +191,7 @@ namespace GraphicsHelper
                 foreach (var triangle in triangles)
                 {
                     var planeTriangle = ProjectionToPlane(triangle, camera);
-                    var bounds = Geometry.getTriangleBounds(planeTriangle);
-                    currentface.AddRange(Raster(planeTriangle, mode, bounds.Item1, bounds.Item2, bounds.Item3,
-                        bounds.Item4)); //projection(triangle)
+                    currentface.AddRange(Raster(planeTriangle)); //projection(triangle)
                     //currentface.AddRange(Raster(triangle));
                 }
 
@@ -203,7 +220,7 @@ namespace GraphicsHelper
                     // Point newpoint = new Point(current.Item1.Value.X, current.Item1.Value.Y,current.Item2);
                     //var current = transformPoint(p, matrix);
                     var tocamv = camera.toCameraView(p);
-                    Vertex newpoint = new Vertex(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf, p.lightness);
+                    Vertex newpoint = new Vertex(current.Item1.Value.X, current.Item1.Value.Y, tocamv.Zf, p.texturePoint);
                     res.Add(newpoint);
                 }
             }
