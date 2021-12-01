@@ -41,6 +41,15 @@ namespace GraphicsHelper
                 cameraDirection.z * (p.Zf - cameraPosition.Zf));
         }
 
+        public Point toWorldView(Point p)
+        {
+            return new Point(
+                cameraRight.x * p.Xf + cameraUp.x * (p.Yf) + cameraDirection.x * (p.Zf) + cameraPosition.Xf,
+                cameraRight.y * p.Xf + cameraUp.y * (p.Yf) + cameraDirection.y * (p.Zf) + cameraPosition.Yf,
+                cameraRight.z * p.Xf + cameraUp.z * (p.Yf) + cameraDirection.z * (p.Zf) + cameraPosition.Zf
+            );
+        }
+
         public void changeView(double shiftX = 0, double shiftY = 0)
         {
             var newPitch = Math.Clamp(pitch + shiftY * cameraRotationSpeed, -89.0, 89.0);

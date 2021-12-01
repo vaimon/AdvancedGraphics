@@ -31,7 +31,7 @@ namespace AdvancedGraphics
         /// <param name="shape">Фигура, которую надо нарисовать</param>
         void drawShape(Shape shape, Pen pen)
         {
-            foreach (var face in shape.Faces.Where(face => face.isFacial))
+            foreach (var face in shape.Faces)
             {
                 drawFace(face, pen);
             }
@@ -66,8 +66,13 @@ namespace AdvancedGraphics
             var pf2 = end.to2D(camera).Item1;
             if(pf1.HasValue && pf2.HasValue)
             {
-                drawVuLine(new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
+                AdditionalAlgorithms.drawVuLine(ref fbitmap, new System.Drawing.Point((int)pf1.Value.X, (int)(pf1.Value.Y)), new System.Drawing.Point((int)pf2.Value.X, (int)(pf2.Value.Y)), pen.Color);
             }
+        }
+        void DrawPoint(Point p)
+        {
+            AdditionalAlgorithms.drawVuLine(ref fbitmap,new System.Drawing.Point((int)p.X, (int)(p.Y)), new System.Drawing.Point((int)(p.X+10), (int)(p.Y+10)), Color.DarkSeaGreen);
+            AdditionalAlgorithms.drawVuLine(ref fbitmap,new System.Drawing.Point((int)(p.X+10), (int)(p.Y)), new System.Drawing.Point((int)(p.X), (int)(p.Y+10)), Color.DarkSeaGreen);
         }
 
         /// <summary>
@@ -107,7 +112,20 @@ namespace AdvancedGraphics
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraDirection.x * 50, camera.cameraPosition.Yf + camera.cameraDirection.y * 50, camera.cameraPosition.Zf + camera.cameraDirection.z * 50), new Pen(Color.CadetBlue));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraRight.x * 50, camera.cameraPosition.Yf + camera.cameraRight.y * 50, camera.cameraPosition.Zf + camera.cameraRight.z * 50), new Pen(Color.DarkOrange));
             drawLine(camera.cameraPosition, new Point(camera.cameraPosition.Xf + camera.cameraUp.x * 50, camera.cameraPosition.Yf + camera.cameraUp.y * 50, camera.cameraPosition.Zf + camera.cameraUp.z * 50), new Pen(Color.Violet));
+            List<Point> lig= Z_buffer.ProjectionToPlane(new List<Point> { lightSource.Position },camera);
+            //DrawPoint(lig[0]);
+
             fbitmap.Dispose();
+            String text = "x:";
+            text += lightSource.Position.Xf.ToString();
+           
+            text += "y:";
+            text += lightSource.Position.Yf.ToString();
+            
+            text += "z:";
+            text += lightSource.Position.Zf.ToString();
+            
+            label10.Text = text;
             canvas.Image = bitmap;
         }
         /// <summary>

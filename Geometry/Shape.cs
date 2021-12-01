@@ -53,6 +53,14 @@ namespace GraphicsHelper
         {
             get => faces;
         }
+        public Color GetColor
+        {
+            get => shapeColor;
+        }
+        public void SetColor(Color c)
+        {
+            this.shapeColor=c;
+        }
 
 
         /// <summary>
@@ -112,10 +120,10 @@ namespace GraphicsHelper
                             normales[int.Parse(stringVertex[2]) - 1], textureVertices[int.Parse(stringVertex[1]) - 1]));
                     }
 
-                    if (!face.isLine())
-                    {
+                   // if (!face.isLine())
+                   // {
                         res.addFace(face);
-                    }
+                    //}
                 }
             }
 

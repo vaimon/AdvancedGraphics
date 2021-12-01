@@ -89,6 +89,30 @@ namespace GraphicsHelper
             });
             return shape;
         }
+        
+        public static Point rotate(Point p, AxisType type, double angle)
+        {
+            Matrix rotation = new Matrix(0, 0);
+
+            switch (type)
+            {
+                case AxisType.X:
+                    rotation = new Matrix(4, 4).fill(1, 0, 0, 0, 0, Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0,
+                        Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1);
+                    break;
+                case AxisType.Y:
+                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), 0, Geometry.Sin(angle), 0, 0, 1, 0, 0,
+                        -Geometry.Sin(angle), 0, Geometry.Cos(angle), 0, 0, 0, 0, 1);
+                    break;
+                case AxisType.Z:
+                    rotation = new Matrix(4, 4).fill(Geometry.Cos(angle), -Geometry.Sin(angle), 0, 0,
+                        Geometry.Sin(angle), Geometry.Cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+                    break;
+            }
+
+                var res = rotation * new Matrix(4, 1).fill(p.Xf, p.Yf, p.Zf, 1);
+                return new Point(res[0, 0], res[1, 0], res[2, 0]);
+            }
 
 
         public static void rotateVectors(ref Vector vector1, ref Vector vector2, double angle, Vector axis)

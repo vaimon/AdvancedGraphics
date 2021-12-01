@@ -25,17 +25,20 @@ namespace AdvancedGraphics
         List<Color> colorrange;
         Shape shapeWithoutNonFacial; // фигура без нелицевых граней
         bool isPruningFaces = false;
-
+        bool is_lighting;
         public Form1()
         {
             sceneShapes = new BindingList<Shape>();
             colorrange = GenerateColors();
+            //colorrange = new List<Color> { Color.Red, Color.Blue, Color.Green };
             scene = new List<Shape>();
             InitializeComponent();
             listBox.DataSource = sceneShapes;
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             camera = new Camera();
+            // lightSource = new LightSource(new Point(100, 100, 100));
             lightSource = new LightSource(new Point(100, 100, 100));
+          
             // А здесь задаём точку начала координат
             Point.worldCenter = new PointF(canvas.Width / 2, canvas.Height / 2);
             Point.projection = ProjectionType.PERSPECTIVE;
@@ -44,9 +47,8 @@ namespace AdvancedGraphics
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //var form = new FormEditShape();
-            //form.Show();
-            Point.projection = ProjectionType.PERSPECTIVE;
+            var form = new FormPlotting();
+            form.Show();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -55,6 +57,7 @@ namespace AdvancedGraphics
             {
                 Shape s = Shape.readShape(openFileDialog1.FileName);
                 sceneShapes.Add(s);
+                s.SetColor(colorrange[sceneShapes.Count() - 1]);
                 scene.Add(s);
                 changeToolsAccessibility(true);
                 redrawScene();
@@ -178,8 +181,9 @@ namespace AdvancedGraphics
 
         private void z_buffer_Click(object sender, EventArgs e)
         {
+            is_lighting = false;
             List<Shape> l = sceneShapes.ToList();
-            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, colorrange);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera,lightSource, colorrange,is_lighting);
             canvas.Image = bmp;
             canvas.Invalidate();
         }
@@ -196,16 +200,34 @@ namespace AdvancedGraphics
                 double.Parse(textScaleX.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleY.Text, CultureInfo.InvariantCulture.NumberFormat), double.Parse(textScaleZ.Text, CultureInfo.InvariantCulture.NumberFormat));
         }
 
+        string textureFileName = "";
         private void buttonLoadTexture_Click(object sender, EventArgs e)
         {
             if (openFileDialog2.ShowDialog() == DialogResult.OK)
             {
-                Shape s = Shape.readShape(openFileDialog2.FileName);
-                sceneShapes.Add(s);
-                scene.Add(s);
-                changeToolsAccessibility(true);
-                redrawScene();
+                textureFileName = openFileDialog2.FileName;
             }
+        }
+
+        private void buttonLighting_Click(object sender, EventArgs e)
+        {
+            //sceneShapes[0].SetColor(Color.Red);
+            is_lighting = true;
+            List<Shape> l = sceneShapes.ToList();
+            //Bitmap bmp = Lighting.Method_Guro(canvas.Width, canvas.Height,l, lightSource, sceneShapes[0].GetColor, camera);
+            Bitmap bmp = Z_buffer.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, is_lighting);
+            canvas.Image = bmp;
+            canvas.Invalidate();
+            is_lighting = false;
+            //redrawScene();
+        }
+
+        private void buttonTexturing_Click(object sender, EventArgs e)
+        {
+            List<Shape> l = sceneShapes.ToList();
+            Bitmap bmp = Z_buffer_texturing.z_buf(canvas.Width, canvas.Height, l, camera, lightSource, colorrange, false,textureFileName);
+            canvas.Image = bmp;
+            canvas.Invalidate();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace GraphicsHelper
     public class Point
     {
         double x, y, z;
+        public double lightness;//для интенсивности освещения
         public static ProjectionType projection = ProjectionType.PERSPECTIVE;
         public static PointF worldCenter;
         static Size screenSize;
@@ -32,14 +33,15 @@ namespace GraphicsHelper
         static Matrix parallelProjectionMatrix, perspectiveProjectionMatrix;
         const double k = 0.001f;
 
-        public Point(int x, int y, int z)
+        public Point(int x, int y, int z,double light=1.0)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            this.lightness = light;
         }
 
-        public Point(Point point) : this(point.x,point.y,point.z) { }
+        public Point(Point point) : this(point.x,point.y,point.z,point.lightness) { }
 
         public override bool Equals(object obj)
         {
@@ -71,11 +73,12 @@ namespace GraphicsHelper
                 -2 * (zScreenFar * zScreenNear) / (zScreenFar - zScreenNear), 0, 0, -1, 0);
         }
 
-        public Point(double x, double y, double z)
+        public Point(double x, double y, double z,double light=1.0)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            this.lightness = light;
         }
 
         public int X
@@ -112,6 +115,12 @@ namespace GraphicsHelper
         {
             get => z;
             set => z = value;
+        }
+        public double light
+        {
+            get => lightness;
+                
+            set => lightness = value;
         }
 
         /// <summary>
@@ -152,6 +161,11 @@ namespace GraphicsHelper
             }
         }
 
+        public System.Drawing.Point toSimple2D()
+        {
+            return new System.Drawing.Point(Math.Clamp(X,0,screenSize.Width - 1), Math.Clamp((int) (worldCenter.Y - Yf),0,screenSize.Height -1));
+        }
+
         public Tuple<PointF?, double> to2D(Camera cam)
         {
             var viewCoord = cam.toCameraView(this);
@@ -162,7 +176,7 @@ namespace GraphicsHelper
                 {
                     return Tuple.Create<PointF?, double>(
                         new PointF(worldCenter.X + (float) viewCoord.Xf, worldCenter.Y + (float) viewCoord.Yf),
-                        (float) this.Zf);
+                        (float) viewCoord.Zf);
                 }
 
                 return null;
@@ -172,7 +186,7 @@ namespace GraphicsHelper
             {
                 if (viewCoord.Zf < 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                 }
 
                 //var eyeDistance = 200;
@@ -182,7 +196,7 @@ namespace GraphicsHelper
                              perspectiveProjectionMatrix;
                 if (res[0, 3] == 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                     //return new PointF(worldCenter.X + (float)res[0, 0] * worldCenter.X, worldCenter.Y + (float)res[0, 1] * worldCenter.Y);
                 }
 
@@ -192,14 +206,14 @@ namespace GraphicsHelper
                 //res[0, 2] = Math.Clamp(res[0, 2], -1, 1);
                 if (res[0, 2] < 0)
                 {
-                    return Tuple.Create<PointF?, double>(null, (float) this.Zf);
+                    return Tuple.Create<PointF?, double>(null, (float) viewCoord.Zf);
                 }
 
                 return Tuple.Create<PointF?, double>(
                     new PointF(worldCenter.X + (float) res[0, 0] * worldCenter.X,
-                        worldCenter.Y + (float) res[0, 1] * worldCenter.Y), (float) this.Zf);
+                        worldCenter.Y + (float) res[0, 1] * worldCenter.Y), (float) viewCoord.Zf);
             }
-            return Tuple.Create<PointF?, double>(to2D(), (float) this.Zf);
+            return Tuple.Create<PointF?, double>(to2D(), (float) viewCoord.Zf);
         }
 
         public override string ToString()

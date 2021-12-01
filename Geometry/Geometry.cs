@@ -130,5 +130,21 @@ namespace GraphicsHelper
 
             return res;
         }
+        /// <summary>
+        /// Возвращает крайние точки по 2 осям
+        /// </summary>
+        /// <param name="triangle"></param>
+        /// <returns>Квадрюпель координат Xmin Xmax Ymin Ymax</returns>
+        public static Tuple<double, double, double, double> getTriangleBounds(List<Vertex> triangle)
+        {
+            if(triangle.Count != 3)
+            {
+                throw new Exception("It's not a triangle >:(");
+            }
+            return Tuple.Create(Math.Min(Math.Min(triangle[0].Xf, triangle[1].Xf), triangle[2].Xf),
+                Math.Max(Math.Max(triangle[0].Xf, triangle[1].Xf), triangle[2].Xf),
+                Math.Min(Math.Min(triangle[0].Yf, triangle[1].Yf), triangle[2].Yf),
+                Math.Max(Math.Max(triangle[0].Yf, triangle[1].Yf), triangle[2].Yf));
+        }
     }
 }
